@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -30,35 +32,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 // ViewModel to handle fetching data from API and managing UI state
-class LetterGameViewModel : ViewModel() {
-    private val _state = MutableStateFlow(LetterGameState())
-    val state: StateFlow<LetterGameState> = _state
 
-    fun loadWords() {
-        viewModelScope.launch {
-            _state.value = LetterGameState(isLoading = true)
-            try {
-//                val words = RetrofitClient.apiService.getWords()
-                _state.value = LetterGameState(words = listOf("test", "test", "test", "test"))
-            } catch (e: IOException) {
-                _state.value = LetterGameState(error = "Network Error")
-            } catch (e: Exception) {
-                _state.value = LetterGameState(error = "Server Error")
-            }
-        }
-    }
-}
-
-data class LetterGameState(
-    val words: List<String> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
-// Difficulty levels
-enum class Difficulty {
-    EASY, MEDIUM, HARD
-}
 
 // Main Activity
 class MainActivity : ComponentActivity() {
@@ -204,7 +178,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
     for (i in 0 until gridSize) {
         for (j in 0 until gridSize) {
             if (grid[i][j] == ' ') {
-//                grid[i][j] = ('A'..'Z').random()
+                grid[i][j] = ('A'..'Z').random()
             }
         }
     }
@@ -214,17 +188,17 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
 
 
 
-
-
 @Composable
 fun LettersTable(
     grid: List<CharArray>,
     targetWords: List<String>,
-    cellSize: Dp = 40.dp
+    cellSize: Dp = 40.dp,
+    spacing: Dp = 4.dp // فاصله بین خانه‌ها
 ) {
     val columns = grid.size
     val rows = grid.size
     val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
+    val spacingPx = with(LocalDensity.current) { spacing.toPx() }
 
     // States to track dragging
     var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
@@ -259,22 +233,23 @@ fun LettersTable(
         val boxWidth = constraints.maxWidth
         val boxHeight = constraints.maxHeight
 
-        val gridWidthPx = columns * cellSizePx
-        val gridHeightPx = rows * cellSizePx
+        val gridWidthPx = (columns * cellSizePx) + ((columns - 1) * spacingPx)
+        val gridHeightPx = (rows * cellSizePx) + ((rows - 1) * spacingPx)
 
         val offsetX = (boxWidth - gridWidthPx) / 2
         val offsetY = (boxHeight - gridHeightPx) / 2
 
         // Convert absolute drag positions to grid coordinates
         fun positionToGridCoordinates(x: Float, y: Float): Pair<Int, Int> {
-            val col = ((x - offsetX) / cellSizePx).roundToInt()
-            val row = ((y - offsetY) / cellSizePx).roundToInt()
+            val col = ((x - offsetX) / (cellSizePx + spacingPx)).roundToInt()
+            val row = ((y - offsetY) / (cellSizePx + spacingPx)).roundToInt()
             return Pair(row, col)
         }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White) // بک گراند صفحه سفید
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -306,24 +281,30 @@ fun LettersTable(
                         val backgroundColor = when {
                             isFound -> Color.Green
                             isDragged -> Color.Red
-                            else -> Color.Gray
+                            else -> Color.LightGray // رنگ پیش‌فرض باکس‌ها
                         }
 
+                        // Draw the cell background
                         drawRect(
                             color = backgroundColor,
-                            topLeft = Offset(col * cellSizePx, row * cellSizePx),
-                            size = Size(cellSizePx, cellSizePx)
+                            topLeft = Offset(
+                                col * (cellSizePx + spacingPx),
+                                row * (cellSizePx + spacingPx)
+                            ),
+                            size = Size(cellSizePx, cellSizePx),
+                            style = androidx.compose.ui.graphics.drawscope.Fill
                         )
 
-                        drawContext.canvas.nativeCanvas.apply {
-                            drawText(
+                        drawIntoCanvas { canvas ->
+                            canvas.nativeCanvas.drawText(
                                 letter.toString(),
-                                col * cellSizePx + cellSizePx / 2,
-                                row * cellSizePx + cellSizePx / 2,
-                                Paint().apply {
+                                col * (cellSizePx + spacingPx) + cellSizePx / 2,
+                                row * (cellSizePx + spacingPx) + cellSizePx / 2 - (cellSizePx / 2) * 0.3f,
+                                android.graphics.Paint().apply {
                                     color = android.graphics.Color.WHITE
-                                    textAlign = Paint.Align.CENTER
+                                    textAlign = android.graphics.Paint.Align.CENTER
                                     textSize = 40f // Adjust text size as needed
+                                    typeface = android.graphics.Typeface.DEFAULT_BOLD
                                 }
                             )
                         }
@@ -333,3 +314,5 @@ fun LettersTable(
         }
     }
 }
+
+
