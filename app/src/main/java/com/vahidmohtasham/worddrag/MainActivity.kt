@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,15 +17,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vahidmohtasham.worddrag.ui.theme.WordDragTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 
@@ -214,51 +222,73 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
 @Composable
 fun LettersTable(grid: List<CharArray>, targetWords: List<String>) {
     val cellSize = 40.dp
-    var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
-    var foundWords by remember { mutableStateOf<List<String>>(emptyList()) }
+    val columns = grid.size
+    val rows = grid.size
 
-    // Collect the letters that user drags
+    val density = LocalDensity.current.density
+
+    // States to track dragging
+    var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
     var currentWord by remember { mutableStateOf("") }
+    var foundWords by remember { mutableStateOf<List<List<Pair<Int, Int>>>>(emptyList()) }
+
+    // Handle dragging within grid cells
+    fun onDrag(row: Int, col: Int) {
+        if (row in 0 until rows && col in 0 until columns) {
+            val newPair = Pair(row, col)
+            if (!draggedLetters.contains(newPair)) {
+                draggedLetters = draggedLetters + newPair
+                currentWord += grid[row][col]
+            }
+        }
+    }
+
+    // Handle the end of the drag action
+    fun onDragEnd() {
+        if (targetWords.contains(currentWord)) {
+            foundWords = foundWords + listOf(draggedLetters) // Wrap draggedLetters in a list
+        }
+        draggedLetters = emptyList()
+        currentWord = ""
+    }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(grid.size),
+        columns = GridCells.Fixed(columns),
         contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        onDragEnd()
+                    },
+                    onDrag = { change, _ ->
+                        val draggedRow = (change.position.y / (cellSize.value * density)).toInt()
+                        val draggedCol = (change.position.x / (cellSize.value * density)).toInt()
+                        onDrag(draggedRow, draggedCol)
+                    }
+                )
+            },
         content = {
-            items(grid.size * grid.size) { index ->
-                val row = index / grid.size
-                val col = index % grid.size
+            items(columns * rows) { index ->
+                val row = index / columns
+                val col = index % columns
                 val letter = grid[row][col]
-                var isCorrect by remember { mutableStateOf(false) }
 
-                // Check if the dragged letters match any target word
-                isCorrect = draggedLetters.contains(Pair(row, col)) &&
-                        foundWords.any { it.contains(letter) }
+                val isDragged = draggedLetters.contains(Pair(row, col))
+                val isFound = foundWords.flatten().contains(Pair(row, col))
+
+                val backgroundColor = when {
+                    isFound -> Color.Green
+                    isDragged -> Color.Red
+                    else -> Color.Gray
+                }
 
                 Box(
                     modifier = Modifier
                         .padding(2.dp)
-                        .background(if (isCorrect) Color.Green else Color.Gray)
-                        .size(cellSize)
-                        .pointerInput(Unit) {
-                            detectDragGestures { _, _ ->
-                                // Add letter coordinates to dragged letters
-                                if (!draggedLetters.contains(Pair(row, col))) {
-                                    draggedLetters = draggedLetters + Pair(row, col)
-                                    currentWord += letter // Update current word being dragged
-                                }
-
-                                // Check if the word formed by dragging matches any target word
-                                if (targetWords.contains(currentWord)) {
-                                    foundWords = foundWords + currentWord // Add found word to list
-                                    draggedLetters.forEach { (r, c) ->
-                                        isCorrect = true // Change background color
-                                    }
-                                    draggedLetters = emptyList() // Clear dragged letters after successful match
-                                    currentWord = "" // Clear current word
-                                }
-                            }
-                        },
+                        .background(backgroundColor)
+                        .size(cellSize),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = letter.toString(), color = Color.White)
