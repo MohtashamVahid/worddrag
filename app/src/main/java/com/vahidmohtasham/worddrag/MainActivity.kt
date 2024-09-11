@@ -1,39 +1,33 @@
 package com.vahidmohtasham.worddrag
 
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vahidmohtasham.worddrag.ui.theme.WordDragTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
-import kotlin.math.sqrt
+import kotlin.math.roundToInt
 import kotlin.random.Random
-
 
 // ViewModel to handle fetching data from API and managing UI state
 class LetterGameViewModel : ViewModel() {
@@ -219,23 +213,29 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
 }
 
 
+
+
+
 @Composable
-fun LettersTable(grid: List<CharArray>, targetWords: List<String>) {
-    val cellSize = 40.dp
+fun LettersTable(
+    grid: List<CharArray>,
+    targetWords: List<String>,
+    cellSize: Dp = 40.dp
+) {
     val columns = grid.size
     val rows = grid.size
-
-    val density = LocalDensity.current.density
+    val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
 
     // States to track dragging
     var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
     var currentWord by remember { mutableStateOf("") }
-    var foundWords by remember { mutableStateOf<List<List<Pair<Int, Int>>>>(emptyList()) }
+    var foundWords by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
 
     // Handle dragging within grid cells
     fun onDrag(row: Int, col: Int) {
         if (row in 0 until rows && col in 0 until columns) {
             val newPair = Pair(row, col)
+
             if (!draggedLetters.contains(newPair)) {
                 draggedLetters = draggedLetters + newPair
                 currentWord += grid[row][col]
@@ -246,54 +246,90 @@ fun LettersTable(grid: List<CharArray>, targetWords: List<String>) {
     // Handle the end of the drag action
     fun onDragEnd() {
         if (targetWords.contains(currentWord)) {
-            foundWords = foundWords + listOf(draggedLetters) // Wrap draggedLetters in a list
+            foundWords = foundWords + draggedLetters
         }
         draggedLetters = emptyList()
         currentWord = ""
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(columns),
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragEnd = {
-                        onDragEnd()
-                    },
-                    onDrag = { change, _ ->
-                        val draggedRow = (change.position.y / (cellSize.value * density)).toInt()
-                        val draggedCol = (change.position.x / (cellSize.value * density)).toInt()
-                        onDrag(draggedRow, draggedCol)
-                    }
-                )
-            },
-        content = {
-            items(columns * rows) { index ->
-                val row = index / columns
-                val col = index % columns
-                val letter = grid[row][col]
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-                val isDragged = draggedLetters.contains(Pair(row, col))
-                val isFound = foundWords.flatten().contains(Pair(row, col))
+        val boxWidth = constraints.maxWidth
+        val boxHeight = constraints.maxHeight
 
-                val backgroundColor = when {
-                    isFound -> Color.Green
-                    isDragged -> Color.Red
-                    else -> Color.Gray
+        val gridWidthPx = columns * cellSizePx
+        val gridHeightPx = rows * cellSizePx
+
+        val offsetX = (boxWidth - gridWidthPx) / 2
+        val offsetY = (boxHeight - gridHeightPx) / 2
+
+        // Convert absolute drag positions to grid coordinates
+        fun positionToGridCoordinates(x: Float, y: Float): Pair<Int, Int> {
+            val col = ((x - offsetX) / cellSizePx).roundToInt()
+            val row = ((y - offsetY) / cellSizePx).roundToInt()
+            return Pair(row, col)
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            val (startRow, startCol) = positionToGridCoordinates(offset.x, offset.y)
+                            onDrag(startRow, startCol)
+                        },
+                        onDragEnd = {
+                            onDragEnd()
+                        },
+                        onDrag = { change, _ ->
+                            val (draggedRow, draggedCol) = positionToGridCoordinates(change.position.x, change.position.y)
+                            onDrag(draggedRow, draggedCol)
+                        }
+                    )
                 }
+        ) {
+            // Draw the grid using Canvas
+            Canvas(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(gridWidthPx.toDp(), gridHeightPx.toDp())
+            ) {
+                for (row in 0 until rows) {
+                    for (col in 0 until columns) {
+                        val letter = grid[row][col]
+                        val isDragged = draggedLetters.contains(Pair(row, col))
+                        val isFound = foundWords.contains(Pair(row, col))
 
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .background(backgroundColor)
-                        .size(cellSize),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = letter.toString(), color = Color.White)
+                        val backgroundColor = when {
+                            isFound -> Color.Green
+                            isDragged -> Color.Red
+                            else -> Color.Gray
+                        }
+
+                        drawRect(
+                            color = backgroundColor,
+                            topLeft = Offset(col * cellSizePx, row * cellSizePx),
+                            size = Size(cellSizePx, cellSizePx)
+                        )
+
+                        drawContext.canvas.nativeCanvas.apply {
+                            drawText(
+                                letter.toString(),
+                                col * cellSizePx + cellSizePx / 2,
+                                row * cellSizePx + cellSizePx / 2,
+                                Paint().apply {
+                                    color = android.graphics.Color.WHITE
+                                    textAlign = Paint.Align.CENTER
+                                    textSize = 40f // Adjust text size as needed
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
-    )
+    }
 }
