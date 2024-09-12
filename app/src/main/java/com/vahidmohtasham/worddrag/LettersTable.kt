@@ -1,4 +1,6 @@
 package com.vahidmohtasham.worddrag
+
+import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -18,7 +20,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vahidmohtasham.worddrag.ui.theme.BackgroundColor
@@ -48,7 +53,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
                         word.forEachIndexed { index, c ->
-                            grid[row][col + index] = c
+                            grid[row][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -59,7 +64,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize)
                     if ((row until row + word.length).all { grid[it][col] == ' ' }) {
                         word.forEachIndexed { index, c ->
-                            grid[row + index][col] = c
+                            grid[row + index][col] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -70,7 +75,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
-                            grid[row][col + index] = c
+                            grid[row][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -81,7 +86,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize)
                     if ((row until row + word.length).all { grid[it][col] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col] = c
+                            grid[row + index][col] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -92,7 +97,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c
+                            grid[row + index][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -103,7 +108,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c
+                            grid[row + index][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -114,7 +119,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c
+                            grid[row + index][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -125,7 +130,7 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     val col = Random.nextInt(gridSize - word.length)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c
+                            grid[row + index][col + index] = c.uppercaseChar()
                         }
                         placed = true
                     }
@@ -139,6 +144,8 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
         for (j in 0 until gridSize) {
             if (grid[i][j] == ' ') {
                 grid[i][j] = ('A'..'Z').random()
+            } else {
+                grid[i][j].uppercaseChar()
             }
         }
     }
@@ -158,7 +165,8 @@ fun LettersTable(
     val rows = grid.size
     val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
     val spacingPx = with(LocalDensity.current) { spacing.toPx() }
-
+    val context = LocalContext.current
+     val customFont = FontFamily(Font(R.font.kavoon_regular))
     // States to track dragging
     var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
     var currentWord by remember { mutableStateOf("") }
@@ -178,12 +186,16 @@ fun LettersTable(
 
     // Handle the end of the drag action
     fun onDragEnd() {
-        if (targetWords.contains(currentWord)) {
+        val lowercaseCurrentWord = currentWord.lowercase()
+
+        if (targetWords.map { it.lowercase() }.contains(lowercaseCurrentWord)) {
             foundWords = foundWords + draggedLetters
         }
+
         draggedLetters = emptyList()
         currentWord = ""
     }
+
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -243,7 +255,6 @@ fun LettersTable(
                             else -> SecondaryColor // رنگ پیش‌فرض برای خانه‌های عادی (برای هماهنگی با بک‌گراند)
                         }
 
-
                         // Draw the cell background
                         drawRect(
                             color = backgroundColor,
@@ -255,22 +266,29 @@ fun LettersTable(
                             style = androidx.compose.ui.graphics.drawscope.Fill
                         )
 
-                        drawIntoCanvas { canvas ->
+                        // Use Compose to draw the letter with style
+                        drawContext.canvas.nativeCanvas.apply {
+
+                            val typeface2 = Typeface.create(
+                                context.resources.getFont(R.font.kavoon_regular),
+                                Typeface.NORMAL
+                            )
+
                             val textPaint = android.graphics.Paint().apply {
                                 color = android.graphics.Color.WHITE
                                 textAlign = android.graphics.Paint.Align.CENTER
-                                textSize = (cellSizePx * 0.6).toFloat() // Adjust text size as needed
-                                typeface = android.graphics.Typeface.DEFAULT_BOLD
-                            }
+                                textSize = (cellSizePx * 0.6).toFloat() // تنظیم اندازه متن
+                                typeface = typeface2
+                                   }
 
-                            // Calculate text position
-                            val textWidth = textPaint.measureText(letter.toString())
-                            val textHeight = textPaint.textSize
+                            val textBounds = android.graphics.Rect()
+                            textPaint.getTextBounds(letter.toString(), 0, 1, textBounds)
+
+                            // مرکز متن در سلول
                             val xPos = col * (cellSizePx + spacingPx) + (cellSizePx / 2)
-                            val yPos = row * (cellSizePx + spacingPx) + (cellSizePx / 2) + (textHeight / 4)
+                            val yPos = row * (cellSizePx + spacingPx) + (cellSizePx / 2) - (textBounds.exactCenterY())
 
-                            // Draw the text
-                            canvas.nativeCanvas.drawText(letter.toString(), xPos, yPos, textPaint)
+                            drawText(letter.toString(), xPos, yPos, textPaint)
                         }
                     }
                 }
