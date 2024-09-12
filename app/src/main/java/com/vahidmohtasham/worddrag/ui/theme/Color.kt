@@ -11,8 +11,19 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 
-val PrimaryColor = Color(0xFFf3ebe4)
-val BackgroundColor = Color(0xFFf2dece)
-val onPrimaryColor  = Color(0xFFf2dece)
-val SecondaryColor = Color(0xFF7D5260)
+//val PrimaryColor = Color(0xFFf3ebe4)
+//val BackgroundColor = Color(0xFFf2dece)
+//val TextPrimaryColor  = Color(0xFFf2dece)
+//val SecondaryColor = Color(0xFF7D5260)
 val CardColor = Color(0xFFf3ebe4)
+
+
+val BackgroundColor = Color(0xFFf2dece)
+//val TextPrimaryColor = Color(0xFF3E2723)
+val TextPrimaryColor = Color(0xFF121e35)
+val TextSecondaryColor = Color(0xFF6D4C41)
+val TopAppBarColor = Color(0xFF8D6E63)
+val SecondaryColor = Color(0xFFBCAAA4)
+//val PrimaryColor = Color(0xFF8D6E63) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
+val PrimaryColor = Color(0xFFfaebe3) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
+val ButtonColor = Color(0xFFf0b951) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
