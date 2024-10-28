@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,10 +28,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.vahidmohtasham.worddrag.ui.theme.BackgroundColor
-import com.vahidmohtasham.worddrag.ui.theme.SecondaryColor
-import com.vahidmohtasham.worddrag.ui.theme.TableGreen
-import com.vahidmohtasham.worddrag.ui.theme.TableRed
+import androidx.core.content.res.ResourcesCompat
+
+
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -220,7 +221,7 @@ fun LettersTable(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundColor) // بک گراند صفحه سفید
+                .background(MaterialTheme.colorScheme.background) // بک گراند صفحه سفید
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -238,6 +239,7 @@ fun LettersTable(
                 }
         ) {
             // Draw the grid using Canvas
+            val secondary=MaterialTheme.colorScheme.secondary
             Canvas(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -250,9 +252,9 @@ fun LettersTable(
                         val isFound = foundWords.contains(Pair(row, col))
 
                         val backgroundColor = when {
-                            isFound -> TableGreen // سبز برای خانه‌هایی که یافت شده‌اند
-                            isDragged -> TableRed // قرمز برای خانه‌هایی که در حال کشیده شدن هستند
-                            else -> SecondaryColor // رنگ پیش‌فرض برای خانه‌های عادی (برای هماهنگی با بک‌گراند)
+                            isFound -> Color.Green // سبز برای خانه‌هایی که یافت شده‌اند
+                            isDragged -> Color.Red // قرمز برای خانه‌هایی که در حال کشیده شدن هستند
+                            else -> secondary // رنگ پیش‌فرض برای خانه‌های عادی (برای هماهنگی با بک‌گراند)
                         }
 
                         // Draw the cell background
@@ -269,11 +271,8 @@ fun LettersTable(
                         // Use Compose to draw the letter with style
                         drawContext.canvas.nativeCanvas.apply {
 
-                            val typeface2 = Typeface.create(
-                                context.resources.getFont(R.font.kavoon_regular),
-                                Typeface.NORMAL
-                            )
-
+//                            val typeface2 = Typeface.createFromAsset(context.assets, "fonts/kavoon_regular.ttf")
+                            val typeface2 = ResourcesCompat.getFont(context, R.font.kavoon_regular)
                             val textPaint = android.graphics.Paint().apply {
                                 color = android.graphics.Color.WHITE
                                 textAlign = android.graphics.Paint.Align.CENTER

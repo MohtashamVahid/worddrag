@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,14 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vahidmohtasham.worddrag.ui.theme.BackgroundColor
-import com.vahidmohtasham.worddrag.ui.theme.PrimaryColor
-import com.vahidmohtasham.worddrag.ui.theme.TextPrimaryColor
-import kotlin.random.Random
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = LetterGameViewModel()) {
+fun LetterGameScreen(navController: NavHostController, difficulty: Difficulty, viewModel: LetterGameViewModel = LetterGameViewModel()) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -52,9 +50,18 @@ fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = Le
         topBar = {
             TopAppBar(
                 title = { Text(text = "Word Puzzle") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("profile") {
+                            popUpTo("profile") { inclusive = true }
+                        }
+                    }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryColor, // رنگ پس‌زمینه تولبار
-                    titleContentColor = TextPrimaryColor // رنگ متن عنوان تولبار
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -63,13 +70,13 @@ fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = Le
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(BackgroundColor)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 when {
                     state.isLoading -> CircularProgressIndicator(modifier = Modifier.fillMaxSize())
                     state.error != null -> Text("Error: ${state.error}", modifier = Modifier.fillMaxSize())
                     else -> {
-                        val gridSize = 10 // اندازه جدول
+                        val gridSize = 10
                         if (state.words.isNotEmpty()) {
                             val grid = remember { generateGrid(gridSize, state.words, difficulty) }
                             Column(
@@ -77,6 +84,7 @@ fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = Le
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 // جدول حروف
+                                WordHint(state.words)
                                 LettersTable(grid, state.words)
 
                                 // نمایش امتیاز زیر جدول
@@ -88,7 +96,7 @@ fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = Le
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Image(
-                                        painter = painterResource(id = R.drawable.money_bag), // آیکون یا عکس امتیاز
+                                        painter = painterResource(id = R.drawable.money_bag),
                                         contentDescription = "Score Icon",
                                         modifier = Modifier.size(50.dp)
                                     )
@@ -96,8 +104,10 @@ fun LetterGameScreen(difficulty: Difficulty, viewModel: LetterGameViewModel = Le
                                 }
 
                                 // راهنمای حرکت بین کلمات
-                                WordHint(state.words)
+
                             }
+                        } else {
+                            Text("No words available", modifier = Modifier.align(Alignment.Center))
                         }
                     }
                 }

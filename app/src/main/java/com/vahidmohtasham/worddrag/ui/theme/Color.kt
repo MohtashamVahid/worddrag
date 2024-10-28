@@ -2,22 +2,14 @@ package com.vahidmohtasham.worddrag.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-//val PrimaryColor = Color(0xFFf3ebe4)
-//val BackgroundColor = Color(0xFFf2dece)
-//val TextPrimaryColor  = Color(0xFFf2dece)
-//val SecondaryColor = Color(0xFF7D5260)
-val CardColor = Color(0xFFf3ebe4)
 
 
-val BackgroundColor = Color(0xFFf2dece)
-//val TextPrimaryColor = Color(0xFF3E2723)
-val TextPrimaryColor = Color(0xFF121e35)
-val TextSecondaryColor = Color(0xFF6D4C41)
-val TopAppBarColor = Color(0xFF8D6E63)
-val SecondaryColor = Color(0xFFBCAAA4)
-//val PrimaryColor = Color(0xFF8D6E63) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
-val PrimaryColor = Color(0xFFfaebe3) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
-val ButtonColor = Color(0xFFf0b951) // اگر رنگی متفاوت برای Primary نیاز دارید، این را تغییر دهید
 
-val TableGreen = Color(0xFF4CAF50) // یک سبز مناسب که با پالت پروژه هماهنگ است
-val TableRed = Color(0xFFF44336) // یک قرمز مناسب
+val DarkPrimaryColor = Color(0xFF1E1E1E) // رنگ اصلی (خاکستری تیره)
+val DarkSecondaryColor = Color(0xFF424242) // رنگ ثانویه (خاکستری متوسط)
+val DarkBackgroundColor = Color(0xFF121212) // رنگ پس‌زمینه تیره
+val DarkSurfaceColor = Color(0xFF1E1E1E) // رنگ سطوح (تیره‌تر از پس‌زمینه)
+val DarkTextPrimaryColor = Color(0xFFFFFFFF) // رنگ متن اصلی (سفید)
+val DarkTextSecondaryColor = Color(0xFFB0BEC5) // رنگ متن ثانویه (خاکستری روشن)
+val DarkDividerColor = Color(0xFF9E9E9E) // رنگ خط تقسیم (خاکستری روشن)
+val DarkTertiaryColor = Color(0xFF616161) // رنگ خاکستری تیره برای tertiary

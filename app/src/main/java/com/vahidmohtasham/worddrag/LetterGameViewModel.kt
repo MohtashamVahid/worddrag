@@ -15,7 +15,7 @@ class LetterGameViewModel : ViewModel() {
             _state.value = LetterGameState(isLoading = true)
             try {
 //                val words = RetrofitClient.apiService.getWords()
-                _state.value = LetterGameState(words = listOf("test", "test", "test", "test"))
+                _state.value = LetterGameState(words = listOf("test", "kotlin", "Android", "Developer"))
             } catch (e: IOException) {
                 _state.value = LetterGameState(error = "Network Error")
             } catch (e: Exception) {
