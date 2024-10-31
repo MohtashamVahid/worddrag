@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.java.jwt)
     implementation(libs.logging.interceptor)
+
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

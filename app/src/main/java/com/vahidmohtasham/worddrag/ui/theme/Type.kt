@@ -49,3 +49,17 @@ val Typography = Typography(
 )
 
 
+val yekanbakhRegularFontFamily = FontFamily(
+    Font(R.font.yekanbakh_regular) // Replace with your font file
+)
+
+val yekanBakhTextStyle = TextStyle(
+    fontFamily = yekanbakhRegularFontFamily,
+    fontSize = 16.sp // Adjust the size as needed
+)
+
+
+
+
+
+

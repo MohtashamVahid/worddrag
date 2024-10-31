@@ -28,6 +28,11 @@ import com.vahidmohtasham.worddrag.api.UserViewModel
 import com.vahidmohtasham.worddrag.screen.category.CategoryDifficultyScreen
 import com.vahidmohtasham.worddrag.screen.game.Difficulty
 import com.vahidmohtasham.worddrag.screen.game.LetterGameScreen
+import com.vahidmohtasham.worddrag.screen.login.EmailVerificationScreen
+import com.vahidmohtasham.worddrag.screen.login.LoginWithEmailScreen
+import com.vahidmohtasham.worddrag.screen.login.PrivacyPolicyScreen
+import com.vahidmohtasham.worddrag.screen.login.ResetPasswordScreen
+import com.vahidmohtasham.worddrag.screen.login.SignUpScreen
 import com.vahidmohtasham.worddrag.ui.theme.WordDragTheme
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -84,13 +89,19 @@ fun MyApp() {
         }
         composable("profile") {
             UserProfileScreen(
+                navController,
                 userName = "Adventurer",
                 score = 75,
                 level = "Intermediate",
                 onCategorySelected = { category ->
-                    navController.navigate("category/$category") {
-                        popUpTo("profile") { inclusive = true }
+                    if (viewModel.isTokenExpired(context)) {
+                        navController.navigate("login_with_email_screen")
+                    } else {
+                        navController.navigate("category/$category") {
+                            popUpTo("profile") { inclusive = true }
+                        }
                     }
+
                 },
                 onDifficultySelected = { difficulty ->
                     navController.navigate("game/${difficulty.name}") {
@@ -111,9 +122,30 @@ fun MyApp() {
                 }, viewModel
             )
         }
+
         composable("game/{difficulty}") { backStackEntry ->
             val difficulty = Difficulty.valueOf(backStackEntry.arguments?.getString("difficulty") ?: "MEDIUM")
             LetterGameScreen(navController, difficulty)
+        }
+
+        composable("login_with_email_screen") {
+            LoginWithEmailScreen(navController, viewModel)
+        }
+
+        composable("reset_password_screen") {
+            ResetPasswordScreen(navController, viewModel)
+        }
+
+        composable("sign_up_screen") {
+            SignUpScreen(navController, viewModel)
+        }
+
+        composable("email_verification_screen") {
+            EmailVerificationScreen(navController, viewModel)
+        }
+
+        composable("privacy_policy_screen") {
+            PrivacyPolicyScreen(navController)
         }
     }
 

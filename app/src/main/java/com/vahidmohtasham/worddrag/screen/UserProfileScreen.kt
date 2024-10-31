@@ -31,11 +31,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import com.vahidmohtasham.worddrag.api.UserViewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import com.vahidmohtasham.worddrag.screen.game.Difficulty
 
 
 @Composable
-fun UserProfileScreen(
+fun UserProfileScreen(navHostController:NavHostController,
     userName: String,
     score: Int,
     level: String,
@@ -92,7 +94,9 @@ fun UserProfileScreen(
                             modifier = Modifier.fillMaxWidth() // پر کردن عرض
                         ) {
                             items(rowCategories) { category ->
-                                CategoryButton(category.name, onClick = onCategorySelected)
+
+                                    CategoryButton(category.name, onClick = onCategorySelected)
+
                             }
                         }
                     }

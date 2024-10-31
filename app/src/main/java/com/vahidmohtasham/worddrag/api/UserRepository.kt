@@ -3,6 +3,8 @@ package com.vahidmohtasham.worddrag.api
 import android.content.Context
 import android.util.Log
 import com.auth0.jwt.JWT
+import com.vahidmohtasham.worddrag.screen.login.EmailResendRequest
+import com.vahidmohtasham.worddrag.screen.login.ForgotPasswordRequest
 import com.vahidmohtasham.worddrag.utils.Constant
 import com.vahidmohtasham.worddrag.utils.SharedPreferencesManager
 import java.util.UUID
@@ -32,7 +34,7 @@ class UserRepository(private val context: Context, private val apiService: ApiSe
         try {
             val response = apiService.loginGuest(LoginGuestRequest(uniqueCode))
             response.user?.let {
-                sharedPreferencesManager.saveString(Constant.USER_ID, it.id)
+                sharedPreferencesManager.saveString(Constant.USER_ID, it._id)
             }
             response.token?.let {
                 sharedPreferencesManager.saveJwtToken(it)
@@ -52,8 +54,8 @@ class UserRepository(private val context: Context, private val apiService: ApiSe
         }
     }
 
-    suspend fun register(uniqueCode: String, email: String, password: String, firstName: String, lastName: String): Result<LoginResponse> {
-        return try {
+    suspend fun register(uniqueCode: String, email: String, password: String, firstName: String, lastName: String): RegisterResponse? {
+        try {
             val response = apiService.register(
                 mapOf(
                     "uniqueCode" to uniqueCode,
@@ -63,26 +65,18 @@ class UserRepository(private val context: Context, private val apiService: ApiSe
                     "lastName" to lastName
                 )
             )
-            if (response.isSuccessful) {
-                Result.success(response.body()!!)
-            } else {
-                Result.failure(Exception("Registration failed"))
-            }
+            return response
         } catch (e: Exception) {
-            Result.failure(e)
+            return null
         }
     }
 
-    suspend fun verifyEmail(userId: String, verificationCode: String): Result<LoginResponse> {
-        return try {
+    suspend fun verifyEmail(userId: String, verificationCode: String): String? {
+        try {
             val response = apiService.verifyEmail(mapOf("userId" to userId, "verificationCode" to verificationCode))
-            if (response.isSuccessful) {
-                Result.success(response.body()!!)
-            } else {
-                Result.failure(Exception("Verification failed"))
-            }
+            return response.getMessageOrError()
         } catch (e: Exception) {
-            Result.failure(e)
+            return null
         }
     }
 
@@ -121,5 +115,32 @@ class UserRepository(private val context: Context, private val apiService: ApiSe
 
     fun getUniqueID(): String? {
         return sharedPreferencesManager.getString(Constant.UNIQUE_CODE, null)
+    }
+
+    suspend fun resetPassword(email: String): BaseResponse {
+        val resetPasswordRequest = ForgotPasswordRequest(email)
+        return RetrofitInstance.getApiService(context).resetPassword(resetPasswordRequest)
+    }
+
+    suspend fun resendVerificationEmail(email: String): BaseResponse {
+        return RetrofitInstance.getApiService(context).resendVerificationEmail(EmailResendRequest(email))
+    }
+
+    fun saveLastEmailVerificationRequestTime(time: Long) {
+        sharedPreferencesManager.putLong("email_verification_last_request_time", time)
+    }
+
+
+    fun getLastEmailVerificationRequestTime(): Long {
+        return sharedPreferencesManager.getLong("email_verification_last_request_time", 0)
+    }
+
+    suspend fun loginWithEmail(identifier: String, password: String): LoginResponse {
+        val loginRequest = LoginRequest(identifier, password)
+        return RetrofitInstance.getApiService(context).loginWithEmail(loginRequest)
+    }
+
+    fun saveJwtToken(token: String?) {
+        sharedPreferencesManager.saveJwtToken(token ?: "")
     }
 }
