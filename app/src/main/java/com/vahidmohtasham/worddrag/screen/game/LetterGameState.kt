@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen.game
 
 data class LetterGameState(
     val words: List<String> = emptyList(),

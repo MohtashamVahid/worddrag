@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen.game
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

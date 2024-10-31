@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow

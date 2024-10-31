@@ -1,6 +1,5 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen.game
 
-import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +27,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import com.vahidmohtasham.worddrag.R
+import com.vahidmohtasham.worddrag.toDp
 
 
 import kotlin.math.roundToInt

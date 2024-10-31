@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class okhttp3.** { *; }
+-keep class retrofit2.** { *; }
+-dontwarn okhttp3.**
+-dontwarn retrofit2.**

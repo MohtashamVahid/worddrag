@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
+import com.vahidmohtasham.worddrag.api.UserViewModel
+import androidx.compose.runtime.livedata.observeAsState
+import com.vahidmohtasham.worddrag.screen.game.Difficulty
 
 
 @Composable
@@ -36,26 +41,9 @@ fun UserProfileScreen(
     level: String,
     onDifficultySelected: (Difficulty) -> Unit,
     onCategorySelected: (String) -> Unit // افزودن تابع برای انتخاب دسته‌بندی
+    , userViewModel: UserViewModel
 ) {
-    val categories = listOf(
-        "Travel",
-        "Food",
-        "Education",
-        "Science",
-        "Sports",
-        "Entertainment",
-        "Art",
-        "History",
-        "Nature",
-        "Technology",
-        "Health",
-        "Finance",
-        "Lifestyle",
-        "Fashion",
-        "Music",
-        "Movies",
-        "Gaming"
-    )
+    val categories by userViewModel.categories.observeAsState() // دریافت دسته‌ها از ViewModel
 
     Scaffold(
 
@@ -97,13 +85,15 @@ fun UserProfileScreen(
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp) // فاصله بین دسته‌ها
             ) {
-                items(categories.chunked(3)) { rowCategories -> // تقسیم دسته‌ها به ردیف‌هایی با 3 دسته
-                    LazyRow(
-                        horizontalArrangement = Arrangement.Center, // وسط‌چین کردن دکمه‌ها
-                        modifier = Modifier.fillMaxWidth() // پر کردن عرض
-                    ) {
-                        items(rowCategories) { category ->
-                            CategoryButton(category = category, onClick = onCategorySelected)
+                categories?.let {
+                    items(it.chunked(3)) { rowCategories -> // تقسیم دسته‌ها به ردیف‌هایی با 3 دسته
+                        LazyRow(
+                            horizontalArrangement = Arrangement.Center, // وسط‌چین کردن دکمه‌ها
+                            modifier = Modifier.fillMaxWidth() // پر کردن عرض
+                        ) {
+                            items(rowCategories) { category ->
+                                CategoryButton(category.name, onClick = onCategorySelected)
+                            }
                         }
                     }
                 }
@@ -123,7 +113,7 @@ fun CategoryButton(category: String, onClick: (String) -> Unit) {
             .height(50.dp), // ارتفاع دکمه‌ها را کاهش می‌دهیم
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary, // رنگ جدید دکمه‌ها
-            contentColor =  MaterialTheme.colorScheme.onPrimary // رنگ متن
+            contentColor = MaterialTheme.colorScheme.onPrimary // رنگ متن
         ),
         shape = MaterialTheme.shapes.small, // استفاده از شکل کوچک‌تر برای دکمه‌ها
         elevation = ButtonDefaults.buttonElevation(4.dp) // سایه ملایم

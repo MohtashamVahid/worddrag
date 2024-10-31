@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
+
 android {
     namespace = "com.vahidmohtasham.worddrag"
     compileSdk = 34
@@ -47,10 +48,16 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(8)) // یا 11 اگر بخواهید از Java 11 استفاده کنید
+        }
+    }
+
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,6 +68,12 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.foundation)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.java.jwt)
+    implementation(libs.logging.interceptor)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

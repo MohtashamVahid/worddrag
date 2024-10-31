@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +21,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vahidmohtasham.worddrag.BuildConfig
+import com.vahidmohtasham.worddrag.R
 import kotlinx.coroutines.delay
 
 @Composable
