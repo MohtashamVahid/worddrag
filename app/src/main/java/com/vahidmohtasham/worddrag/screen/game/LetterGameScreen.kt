@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,16 +37,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.vahidmohtasham.worddrag.R
+import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LetterGameScreen(navController: NavHostController, difficulty: Difficulty, viewModel: LetterGameViewModel = LetterGameViewModel()) {
+fun LetterGameScreen(
+    navController: NavHostController,
+    difficulty: Difficulty,
+    progressViewModel: ProgressViewModel
+) {
+    val startStageResponse by progressViewModel.startStageResponse.observeAsState()
+    val isLoading by progressViewModel.isLoading.observeAsState()
+    val error by progressViewModel.error.observeAsState()
+    val viewModel: LetterGameViewModel = viewModel()
+
     val state by viewModel.state.collectAsState()
 
+    val isButtonEnabled by viewModel.isButtonEnabled.collectAsState() // وضعیت دکمه
+
     LaunchedEffect(Unit) {
-        viewModel.loadWords()
+        startStageResponse?.let {
+            it.stage?.let { stage ->
+                if (stage.words.isNotEmpty()) {
+                    viewModel.loadWords(stage.words)
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -58,6 +79,18 @@ fun LetterGameScreen(navController: NavHostController, difficulty: Difficulty, v
                         }
                     }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
+                actions = { // اضافه کردن دکمه به بخش actions
+                    IconButton(
+                        onClick = {
+                            startStageResponse?.let {
+                                navController.navigate("learn_words_screen/${it.stage?.id}")
+                            }
+                        },
+                       // enabled = isButtonEnabled // فعال یا غیرفعال کردن دکمه
+                    ) {
+                        Icon(Icons.Filled.Check, contentDescription = "Check")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -86,8 +119,7 @@ fun LetterGameScreen(navController: NavHostController, difficulty: Difficulty, v
                             ) {
                                 // جدول حروف
                                 WordHint(state.words)
-                                LettersTable(grid, state.words)
-
+                                LettersTable(grid, state.words, viewModel = viewModel) // ارسال ViewModel به LettersTable
                                 // نمایش امتیاز زیر جدول
                                 Box(
                                     modifier = Modifier

@@ -93,8 +93,6 @@ fun LoginWithEmailScreen(navController: NavController, userViewModel: UserViewMo
     }
 
 
-
-
     Scaffold(
         topBar = {
             TopAppBar(

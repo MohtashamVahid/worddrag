@@ -33,16 +33,17 @@ import com.vahidmohtasham.worddrag.api.UserViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.api.Category
 import com.vahidmohtasham.worddrag.screen.game.Difficulty
 
 
 @Composable
-fun UserProfileScreen(navHostController:NavHostController,
+fun UserProfileScreen(
+    navHostController: NavHostController,
     userName: String,
     score: Int,
     level: String,
-    onDifficultySelected: (Difficulty) -> Unit,
-    onCategorySelected: (String) -> Unit // افزودن تابع برای انتخاب دسته‌بندی
+     onCategorySelected: (Category) -> Unit // افزودن تابع برای انتخاب دسته‌بندی
     , userViewModel: UserViewModel
 ) {
     val categories by userViewModel.categories.observeAsState() // دریافت دسته‌ها از ViewModel
@@ -94,9 +95,7 @@ fun UserProfileScreen(navHostController:NavHostController,
                             modifier = Modifier.fillMaxWidth() // پر کردن عرض
                         ) {
                             items(rowCategories) { category ->
-
-                                    CategoryButton(category.name, onClick = onCategorySelected)
-
+                                CategoryButton(category, onClick = onCategorySelected)
                             }
                         }
                     }
@@ -109,7 +108,7 @@ fun UserProfileScreen(navHostController:NavHostController,
 }
 
 @Composable
-fun CategoryButton(category: String, onClick: (String) -> Unit) {
+fun CategoryButton(category: Category, onClick: (Category) -> Unit) {
     Button(
         onClick = { onClick(category) },
         modifier = Modifier
@@ -123,7 +122,7 @@ fun CategoryButton(category: String, onClick: (String) -> Unit) {
         elevation = ButtonDefaults.buttonElevation(4.dp) // سایه ملایم
     ) {
         Text(
-            text = category,
+            text = category.name,
             style = MaterialTheme.typography.bodyMedium, // تغییر به bodyMedium برای وضوح بیشتر
         )
     }

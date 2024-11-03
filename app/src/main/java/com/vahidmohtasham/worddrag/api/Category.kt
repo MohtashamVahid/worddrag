@@ -1,9 +1,11 @@
 package com.vahidmohtasham.worddrag.api
 
+import com.google.gson.annotations.SerializedName
+
 data class Category(
-    val id: String,                 // معادل _id در JSON
-    val name: String,               // نام دسته
-    val description: String?,       // توضیحات
+    @SerializedName("_id") val id: String,
+    val name: String,
+    val description: String?,
     val icon: String?,              // آیکون
     val parentCategory: String?,     // شناسه دسته والد
     val isActive: Boolean,          // وضعیت فعال
@@ -14,4 +16,4 @@ data class Category(
 
 data class CategoriesResponse(
     val categories: List<Category>
-):BaseResponse()
+) : BaseResponse()

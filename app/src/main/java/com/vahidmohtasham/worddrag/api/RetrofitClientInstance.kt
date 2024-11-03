@@ -70,7 +70,7 @@ object RetrofitInstance {
             .writeTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(logging)
-//            .addInterceptor(AuthInterceptor(token))
+            .addInterceptor(AuthInterceptor(token))
 //            .addInterceptor(TokenInterceptor(context))
 //            .addInterceptor(VersionInterceptor())
 //            .addInterceptor(NetworkConnectionInterceptor(context))
@@ -115,5 +115,9 @@ object RetrofitInstance {
     fun getApiService(context: Context): ApiService {
         val token = SharedPreferencesManager.init(context).getJwtToken()
         return getRetrofit(context, token ?: "").create(ApiService::class.java)
+    }
+    fun getProgressApi(context: Context): ProgressApi {
+        val token = SharedPreferencesManager.init(context).getJwtToken()
+        return getRetrofit(context, token ?: "").create(ProgressApi::class.java)
     }
 }

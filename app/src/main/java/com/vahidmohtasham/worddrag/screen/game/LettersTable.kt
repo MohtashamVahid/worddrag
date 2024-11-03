@@ -1,5 +1,6 @@
 package com.vahidmohtasham.worddrag.screen.game
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -27,13 +28,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vahidmohtasham.worddrag.R
 import com.vahidmohtasham.worddrag.toDp
 
 
 import kotlin.math.roundToInt
 import kotlin.random.Random
-
 
 fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): List<CharArray> {
     val grid = Array(gridSize) { CharArray(gridSize) { ' ' } }
@@ -160,14 +161,15 @@ fun LettersTable(
     grid: List<CharArray>,
     targetWords: List<String>,
     cellSize: Dp = 40.dp,
-    spacing: Dp = 4.dp // فاصله بین خانه‌ها
+    spacing: Dp = 4.dp, // فاصله بین خانه‌ها
+    viewModel: LetterGameViewModel // پاس دادن ViewModel به کامپوزبل
 ) {
     val columns = grid.size
     val rows = grid.size
     val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
     val spacingPx = with(LocalDensity.current) { spacing.toPx() }
     val context = LocalContext.current
-     val customFont = FontFamily(Font(R.font.kavoon_regular))
+
     // States to track dragging
     var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
     var currentWord by remember { mutableStateOf("") }
@@ -190,7 +192,12 @@ fun LettersTable(
         val lowercaseCurrentWord = currentWord.lowercase()
 
         if (targetWords.map { it.lowercase() }.contains(lowercaseCurrentWord)) {
+            viewModel.addFoundWord(lowercaseCurrentWord) // استفاده از ViewModel برای افزودن کلمه پیدا شده
+            Log.d("LettersTable", "Word found: $lowercaseCurrentWord") // لاگ وقتی کلمه پیدا شده است
             foundWords = foundWords + draggedLetters
+
+        } else {
+            Log.d("LettersTable", "Word not found: $lowercaseCurrentWord") // لاگ وقتی کلمه پیدا نشده است
         }
 
         draggedLetters = emptyList()
@@ -239,7 +246,7 @@ fun LettersTable(
                 }
         ) {
             // Draw the grid using Canvas
-            val secondary=MaterialTheme.colorScheme.secondary
+            val secondary = MaterialTheme.colorScheme.secondary
             Canvas(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -270,15 +277,12 @@ fun LettersTable(
 
                         // Use Compose to draw the letter with style
                         drawContext.canvas.nativeCanvas.apply {
-
-//                            val typeface2 = Typeface.createFromAsset(context.assets, "fonts/kavoon_regular.ttf")
-                            val typeface2 = ResourcesCompat.getFont(context, R.font.kavoon_regular)
                             val textPaint = android.graphics.Paint().apply {
                                 color = android.graphics.Color.WHITE
                                 textAlign = android.graphics.Paint.Align.CENTER
                                 textSize = (cellSizePx * 0.6).toFloat() // تنظیم اندازه متن
-                                typeface = typeface2
-                                   }
+                                typeface = ResourcesCompat.getFont(context, R.font.kavoon_regular)
+                            }
 
                             val textBounds = android.graphics.Rect()
                             textPaint.getTextBounds(letter.toString(), 0, 1, textBounds)
