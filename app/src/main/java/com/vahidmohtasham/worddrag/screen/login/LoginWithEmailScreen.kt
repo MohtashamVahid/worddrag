@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.vahidmohtasham.worddrag.R
-import com.vahidmohtasham.worddrag.api.UserViewModel
+import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import com.vahidmohtasham.worddrag.screen.MainActivity
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
 import com.vahidmohtasham.worddrag.utils.NetworkUtils
@@ -253,20 +253,20 @@ fun LoginWithEmailScreen(navController: NavController, userViewModel: UserViewMo
                             userViewModel.clearError()
                         }
                 )
-                Text(
-                    text = "ورود به عنوان میهمان",
-                    fontSize = 14.sp,
-                    style = yekanBakhTextStyle,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .clickable {
-                            val uniqueCode = userViewModel.getUniqueID()
-                            if (uniqueCode != null)
-                                userViewModel.loginGuest(uniqueCode)
-                        }
-                )
+//                Text(
+//                    text = "ورود به عنوان میهمان",
+//                    fontSize = 14.sp,
+//                    style = yekanBakhTextStyle,
+//                    textAlign = TextAlign.Center,
+//                    color = MaterialTheme.colorScheme.onBackground, modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 8.dp, horizontal = 16.dp)
+//                        .clickable {
+//                            val uniqueCode = userViewModel.getUniqueID()
+//                            if (uniqueCode != null)
+//                                userViewModel.loginGuest(uniqueCode)
+//                        }
+//                )
 
                 Text(
                     text = "رمز عبور خود را فراموش کرده‌ام؟",

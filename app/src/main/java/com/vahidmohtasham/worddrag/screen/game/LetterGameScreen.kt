@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.BannerAdCardView
 import com.vahidmohtasham.worddrag.R
 import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
 
@@ -120,23 +121,10 @@ fun LetterGameScreen(
                                 // جدول حروف
                                 WordHint(state.words)
                                 LettersTable(grid, state.words, viewModel = viewModel) // ارسال ViewModel به LettersTable
-                                // نمایش امتیاز زیر جدول
-                                Box(
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxWidth()
-                                        .background(Color.LightGray),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.money_bag),
-                                        contentDescription = "Score Icon",
-                                        modifier = Modifier.size(50.dp)
-                                    )
-                                    Text(text = "Score: ${state.score}", fontSize = 18.sp)
-                                }
 
-                                // راهنمای حرکت بین کلمات
+                                BannerAdCardView(
+                                    "7fa22e57-68c4-4157-85a0-485f7fa08f25", Modifier.padding(top = 16.dp, end = 8.dp, start = 8.dp)
+                                )
 
                             }
                         } else {

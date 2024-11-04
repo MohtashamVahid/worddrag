@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag.api
+package com.vahidmohtasham.worddrag.viewmodels
 
 import android.content.Context
 import android.util.Log
@@ -6,9 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vahidmohtasham.worddrag.utils.SharedPreferencesManager
+import com.vahidmohtasham.worddrag.api.ApiService
+import com.vahidmohtasham.worddrag.api.ProgressApi
+import com.vahidmohtasham.worddrag.api.RetrofitInstance
+import com.vahidmohtasham.worddrag.api.entity.AppConfig
+import com.vahidmohtasham.worddrag.api.entity.Category
+import com.vahidmohtasham.worddrag.api.entity.RegisterResponse
+import com.vahidmohtasham.worddrag.api.entity.User
+import com.vahidmohtasham.worddrag.viewmodels.repositorys.UserRepository
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -22,8 +28,6 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _registrationResponse = MutableLiveData<RegisterResponse?>()
     val registrationResponse: LiveData<RegisterResponse?> get() = _registrationResponse
 
-    private val _verificationResponse = MutableLiveData<String?>()
-    val verificationResponse: LiveData<String?> get() = _verificationResponse
 
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>> get() = _categories
@@ -44,26 +48,9 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val timerLimitInSeconds = 120  // دو دقیقه
 
 
-
     private val _resetPasswordResponse = MutableLiveData<String>()
     val resetPasswordResponse: LiveData<String> get() = _resetPasswordResponse
 
-
-
-    fun loginGuest(uniqueCode: String) {
-        _isLoading.postValue(true)
-
-        viewModelScope.launch {
-            try {
-                _loginResponse.value = userRepository.loginGuest(uniqueCode)
-            }catch (_:Exception){
-
-            } finally {
-                _isLoading.postValue(false)
-
-            }
-        }
-    }
 
     fun fetchCategories() {
         _isLoading.postValue(true)
@@ -87,9 +74,14 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
-    fun register(uniqueCode: String, email: String, password: String, firstName: String, lastName: String) {
+    fun register(
+        firstName: String,
+        lastName: String,
+        password: String,
+        email: String
+    ) {
         viewModelScope.launch {
-            val result = userRepository.register(uniqueCode, email, password, firstName, lastName)
+            val result = userRepository.register(email, password, firstName, lastName)
             _registrationResponse.value = result
         }
     }
@@ -97,7 +89,8 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     fun verifyEmail(userId: String, verificationCode: String) {
         viewModelScope.launch {
             val result = userRepository.verifyEmail(userId, verificationCode)
-            _verificationResponse.value = result
+            userRepository.saveEmailVerified(true)
+            _verifyEmailResponse.value = result
         }
     }
 
@@ -105,20 +98,16 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
         return userRepository.getUserId()
     }
 
-    fun getUniqueID(): String? {
-        return userRepository.getUniqueID()
-    }
-
     fun isTokenExpired(context: Context): Boolean {
         return userRepository.isTokenExpired(context)
     }
 
-    fun resendVerificationEmail(email: String) {
+    fun resendVerificationEmail() {
         viewModelScope.launch {
             _isLoading.postValue(true)
             try {
                 _error.postValue(null)
-                val response = userRepository.resendVerificationEmail(email)
+                val response = userRepository.resendVerificationEmail()
                 userRepository.saveLastEmailVerificationRequestTime(System.currentTimeMillis())
 
                 startTimer(timerLimitInSeconds)
@@ -140,6 +129,7 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
             }
         }
     }
+
     fun resetPassword(email: String) {
         viewModelScope.launch {
             try {
@@ -164,7 +154,10 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
                 val response = userRepository.loginWithEmail(identifier, password)
                 userRepository.saveJwtToken(response.token)
-                 _loginResponse.postValue(response.user)
+                response.user?.let {
+                    userRepository.saveEmailVerified(it.emailVerified)
+                }
+                _loginResponse.postValue(response.user)
 
             } catch (e: HttpException) {
                 // بررسی کد HTTP و پیام خطا از سرور
@@ -182,6 +175,50 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     fun clearError() {
         _error.postValue(null)
+    }
+
+    fun loadConfigFromPreferences(context: Context): AppConfig {
+        return userRepository.loadConfigFromPreferences(context)
+    }
+
+    fun loadConfig() {
+        userRepository.loadConfig()
+    }
+
+    fun hasFreeTimeRemaining(adId: String): Boolean {
+        return userRepository.hasFreeTimeRemaining(adId)
+    }
+
+    fun setRandomTimer(bannerAdIdInterstitial: String) {
+        userRepository.setRandomTimer(bannerAdIdInterstitial)
+    }
+
+    fun shouldShowUpdateDialog(): Boolean {
+        return userRepository.shouldShowUpdateDialog()
+    }
+
+    fun savePrefLastUpdatePrompt() {
+        userRepository.savePrefLastUpdatePrompt()
+    }
+
+    fun clearRegisterResponse() {
+        _registrationResponse.value = null
+    }
+
+    fun isEmailVerified(): Boolean {
+        return userRepository.isEmailVerified()
+    }
+
+    fun getProgressApi(context: Context): ProgressApi {
+        return userRepository.getProgressApi(context)
+    }
+
+    fun getApiService(context: Context): ApiService {
+        return userRepository.getApiService(context)
+    }
+
+    fun updateApiServices(context: Context) {
+        userRepository.updateApiServices(context)
     }
 
 }

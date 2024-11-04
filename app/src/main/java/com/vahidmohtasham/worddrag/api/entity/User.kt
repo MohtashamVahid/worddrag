@@ -1,4 +1,6 @@
-package com.vahidmohtasham.worddrag.api
+package com.vahidmohtasham.worddrag.api.entity
+
+import com.vahidmohtasham.worddrag.api.responses.BaseResponse
 
 data class User(
     val _id: String,

@@ -172,7 +172,5 @@ object SharedPreferencesManager {
         return sharedPreferences?.getLong("email_verification_last_request_time", 0) ?: 0
     }
 
-    fun saveEmailVerified(isVerified: Boolean) {
-        sharedPreferences?.edit()?.putBoolean("email_verified", isVerified)?.apply()
-    }
+
 }

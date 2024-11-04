@@ -1,7 +1,6 @@
 package com.vahidmohtasham.worddrag.screen.category
 
 import com.google.gson.annotations.SerializedName
-import com.vahidmohtasham.worddrag.api.BaseResponse
 
 data class StageResponse(
     val message: String?, // پیام وضعیت

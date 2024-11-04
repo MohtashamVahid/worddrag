@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vahidmohtasham.worddrag.BuildConfig
@@ -27,30 +27,26 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
-    // لیست تصاویر ریسورس
     val images = listOf(
         R.drawable.splash_1,
         R.drawable.splash_2,
         R.drawable.splash_3
     )
 
-    // انتخاب تصادفی یک تصویر از لیست
     val randomImage = remember { images.random() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(Color.Black), // پس‌زمینه مشکی برای حالت فول اسکرین
         contentAlignment = Alignment.Center
     ) {
-        // نمایش تصویر تمام صفحه
         Image(
             painter = painterResource(id = randomImage),
             contentDescription = null,
             contentScale = ContentScale.Crop, // تصویر به صورت تمام‌صفحه نمایش داده می‌شود
             modifier = Modifier.fillMaxSize()
         )
-
 
         Column(
             modifier = Modifier
@@ -67,16 +63,18 @@ fun SplashScreen(onTimeout: () -> Unit) {
             Text(
                 text = "Vahid Mohtasham",
                 fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 0.dp)
                 .height(4.dp)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(Color.Gray) // رنگ پس‌زمینه نوار بارگذاری
         ) {
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxSize(),

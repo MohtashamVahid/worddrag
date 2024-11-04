@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag.api
+package com.vahidmohtasham.worddrag.api.responses
 
 open class BaseResponse(
     open val success: Boolean? = null,

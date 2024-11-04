@@ -1,6 +1,7 @@
-package com.vahidmohtasham.worddrag.api
+package com.vahidmohtasham.worddrag.api.entity
 
 import com.google.gson.annotations.SerializedName
+import com.vahidmohtasham.worddrag.api.responses.BaseResponse
 
 data class Category(
     @SerializedName("_id") val id: String,

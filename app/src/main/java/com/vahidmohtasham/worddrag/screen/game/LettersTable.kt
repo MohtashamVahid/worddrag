@@ -23,14 +23,11 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vahidmohtasham.worddrag.R
-import com.vahidmohtasham.worddrag.toDp
+import com.vahidmohtasham.worddrag.utils.toDp
 
 
 import kotlin.math.roundToInt

@@ -1,9 +1,9 @@
-package com.vahidmohtasham.worddrag
+package com.vahidmohtasham.worddrag.screen.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.vahidmohtasham.worddrag.api.UserRepository
-import com.vahidmohtasham.worddrag.api.UserViewModel
+import com.vahidmohtasham.worddrag.viewmodels.repositorys.UserRepository
+import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 
 class UserViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
 

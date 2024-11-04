@@ -1,5 +1,9 @@
 package com.vahidmohtasham.worddrag.api
 
+import com.vahidmohtasham.worddrag.api.responses.CompleteStageRequest
+import com.vahidmohtasham.worddrag.api.responses.MarkWordLearnedRequest
+import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
+import com.vahidmohtasham.worddrag.api.responses.UserProgressResponse
 import com.vahidmohtasham.worddrag.screen.category.StageResponse
 import com.vahidmohtasham.worddrag.screen.category.UserStagesResponse
 import retrofit2.Call
@@ -7,10 +11,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-
-data class StartNewStageRequest(val userId: String, val categoryId: String, val wordsPerStage: Int = 5)
-data class MarkWordLearnedRequest(val userId: String, val stageId: String, val wordId: String)
-data class CompleteStageRequest(val userId: String, val stageId: String)
 
 interface ProgressApi : ApiService {
 
@@ -30,4 +30,10 @@ interface ProgressApi : ApiService {
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 10
     ): Call<UserStagesResponse>
+
+    // اضافه کردن متد جدید برای دریافت پیشرفت کاربر
+    @GET("user-progress")
+    fun getUserProgress(
+        @Query("userId") userId: String,
+    ): Call<UserProgressResponse>
 }

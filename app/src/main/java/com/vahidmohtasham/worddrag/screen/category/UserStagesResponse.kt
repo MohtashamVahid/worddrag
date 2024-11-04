@@ -1,6 +1,6 @@
 package com.vahidmohtasham.worddrag.screen.category
 
-import com.vahidmohtasham.worddrag.api.BaseResponse
+import com.vahidmohtasham.worddrag.api.responses.BaseResponse
 
 data class UserStagesResponse(
     val stages: List<StageData>, // لیستی از مراحل کاربر

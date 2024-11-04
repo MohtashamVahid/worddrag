@@ -27,6 +27,7 @@ private val DarkColorScheme = darkColorScheme(
     background = DarkBackgroundColor,//Color(0xFF121212) // رنگ پس‌زمینه کلی
     onBackground = Color(0xFFf3ebe4) // رنگ متن روی پس‌زمینه
 )
+
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFFB2DFDB), // سبز مایل به آبی ملایم
     secondary = Color(0xFF80DEEA), // آبی ملایم

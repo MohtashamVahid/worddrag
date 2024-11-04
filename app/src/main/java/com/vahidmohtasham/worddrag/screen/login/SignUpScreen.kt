@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.vahidmohtasham.worddrag.R
 
-import com.vahidmohtasham.worddrag.api.UserViewModel
+import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import com.vahidmohtasham.worddrag.screen.MainActivity
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
 import java.util.regex.Pattern
@@ -72,7 +72,6 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
     var firstName by remember { mutableStateOf(TextFieldValue("")) }
     var lastName by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
-    var phone by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -81,8 +80,7 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
     val firstNameFocusRequester = remember { FocusRequester() }
     val lastNameFocusRequester = remember { FocusRequester() }
     val emailFocusRequester = remember { FocusRequester() }
-    val phoneFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
+     val passwordFocusRequester = remember { FocusRequester() }
 
     // بارگذاری وضعیت
     val registerResponse by userViewModel.registrationResponse.observeAsState()
@@ -93,7 +91,7 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
         registerResponse?.let {
             Toast.makeText(context, it.getMessageOrError() ?: "", Toast.LENGTH_SHORT).show()
             navController.popBackStack()
-//            userViewModel.clearRegisterResponse()
+            userViewModel.clearRegisterResponse()
         }
     }
 
@@ -231,7 +229,7 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                             imeAction = ImeAction.Next // اکشن صفحه کلید
                         ),
                         keyboardActions = KeyboardActions(
-                            onNext = { phoneFocusRequester.requestFocus() } // جابه‌جایی فوکوس به شماره تلفن
+                            onNext = { passwordFocusRequester.requestFocus() } // جابه‌جایی فوکوس به شماره تلفن
                         )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -273,16 +271,15 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 // انجام عملیات ثبت نام
-                                errorMessage = validateInput(firstName.text, lastName.text, email.text, phone.text, password.text)
+                                errorMessage = validateInput(firstName.text, lastName.text, email.text,   password.text)
                                 if (errorMessage.isEmpty()) {
                                     isLoading?.let {
-                                        if (!it)
+                                         if (!it)
                                             userViewModel.register(
                                                 firstName.text.trim(),
                                                 lastName.text.trim(),
-                                                email.text.trim(),
-                                                phone.text.trim(),
-                                                password.text.trim()
+                                                password.text.trim(),
+                                                email.text.trim()
                                             )
                                     }
                                 }
@@ -304,7 +301,7 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                         ),
                         onClick = {
 
-                            errorMessage = validateInput(firstName.text, lastName.text, email.text, phone.text, password.text)
+                            errorMessage = validateInput(firstName.text, lastName.text, email.text,   password.text)
 
                             if (errorMessage.isEmpty()) {
                                 isLoading?.let {
@@ -312,9 +309,8 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                                         userViewModel.register(
                                             firstName.text.trim(),
                                             lastName.text.trim(),
-                                            email.text.trim(),
-                                            phone.text.trim(),
-                                            password.text.trim()
+                                            password.text.trim(),
+                                            email.text.trim()
                                         )
                                 }
                             }
@@ -417,9 +413,9 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
 }
 
 
-fun validateInput(firstName: String, lastName: String, email: String, phone: String, password: String): String {
+fun validateInput(firstName: String, lastName: String, email: String, password: String): String {
 
-    if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+    if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()  || password.isEmpty()) {
 
         return "همه فیلد ها لازم هستن"
 
@@ -435,11 +431,7 @@ fun validateInput(firstName: String, lastName: String, email: String, phone: Str
 
     val phonePattern = Pattern.compile("^09[0-9]{9}$")
 
-    if (!phonePattern.matcher(phone).matches()) {
 
-        return "شماره تلفن صحیح نیست"
-
-    }
 
     if (password.length < 4) {
         return "پسورد حداقل 4 کاراکتر"

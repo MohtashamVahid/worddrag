@@ -19,6 +19,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "BANNER_AD_ID_PROFILE", "\"7fa22e57-68c4-4157-85a0-485f7fa08f25\"")
+        buildConfigField("String", "BANNER_AD_ID_LEARNING", "\"3dd18455-d03e-4eef-8a98-8135be876d4c\"")
+        buildConfigField("String", "BANNER_AD_ID_Interstitial", "\"6b229fa5-9195-4f72-af76-58c3c0476589\"")
+
     }
 
     buildTypes {
@@ -76,6 +81,8 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     implementation(libs.coil.compose)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.sdk)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

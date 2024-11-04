@@ -19,6 +19,8 @@ javaJwt = "4.4.0"
 loggingInterceptor = "5.0.0-alpha.14"
 coil = "2.7.0"
 coilCompose = "2.7.0"
+accompanistSystemuicontroller = "0.36.0"
+sdk = "4.8.0"
 
 
 [libraries]
@@ -45,6 +47,8 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 java-jwt = { group = "com.auth0", name = "java-jwt", version.ref = "javaJwt" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
+sdk = { group = "com.adivery", name = "sdk", version.ref = "sdk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

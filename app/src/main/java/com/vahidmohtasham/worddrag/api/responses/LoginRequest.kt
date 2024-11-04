@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag.api
+package com.vahidmohtasham.worddrag.api.responses
 
 data class LoginRequest(val email: String, val password: String)
 data class RegisterRequest(val uniqueCode: String, val email: String, val password: String, val firstName: String, val lastName: String)

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
   import com.vahidmohtasham.worddrag.R
-import com.vahidmohtasham.worddrag.api.UserViewModel
+import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,8 +64,8 @@ fun EmailVerificationScreen(
 
     LaunchedEffect(verifyEmailResponse.value) {
         verifyEmailResponse.value?.let {
-            navController.navigate("sessions") {
-                popUpTo("sessions") { inclusive = true }
+            navController.navigate("profile") {
+                popUpTo("profile") { inclusive = true }
                 launchSingleTop = true
             }
         }
@@ -123,6 +123,7 @@ fun EmailVerificationScreen(
 
                 TextField(
                     value = verificationCode.value,
+                    singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onBackground,
                         unfocusedTextColor = MaterialTheme.colorScheme.surface,
@@ -173,7 +174,7 @@ fun EmailVerificationScreen(
                 } else {
                     Button(
                         onClick = {
-                            viewModel.resendVerificationEmail(email.value)
+                            viewModel.resendVerificationEmail()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {

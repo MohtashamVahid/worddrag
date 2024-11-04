@@ -1,9 +1,15 @@
 package com.vahidmohtasham.worddrag.api
 
+import com.vahidmohtasham.worddrag.api.entity.CategoriesResponse
+import com.vahidmohtasham.worddrag.api.entity.LoginGuestRequest
+import com.vahidmohtasham.worddrag.api.entity.LoginResponse
+import com.vahidmohtasham.worddrag.api.entity.RegisterResponse
+import com.vahidmohtasham.worddrag.api.responses.AppConfigResponse
+import com.vahidmohtasham.worddrag.api.responses.BaseResponse
+import com.vahidmohtasham.worddrag.api.responses.LoginRequest
 import com.vahidmohtasham.worddrag.screen.login.EmailResendRequest
 import com.vahidmohtasham.worddrag.screen.login.ForgotPasswordRequest
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
@@ -12,24 +18,23 @@ interface ApiService {
     suspend fun getCategories(
     ): CategoriesResponse
 
+    @GET("config/app-config")
+    fun getAppConfig(): Call<AppConfigResponse>
 
     @POST("login")
     suspend fun login(@Body loginRequest: Map<String, String>): LoginResponse
 
-    @POST("register")
+    @POST("user/register")
     suspend fun register(@Body registerRequest: Map<String, String>): RegisterResponse
 
-    @POST("verifyEmail")
+    @POST("user/verify-email")
     suspend fun verifyEmail(@Body verifyRequest: Map<String, String>): BaseResponse
-
-    @POST("user/login-guest")
-    suspend fun loginGuest(@Body request: LoginGuestRequest): LoginResponse
 
     @POST("user/reset-password")
     suspend fun resetPassword(@Body resetPasswordRequest: ForgotPasswordRequest): BaseResponse
 
     @POST("user/resend-verification-email")
-    suspend fun resendVerificationEmail(@Body request: EmailResendRequest): BaseResponse
+    suspend fun resendVerificationEmail(): BaseResponse
 
     @POST("user/login-email")
     suspend fun loginWithEmail(@Body loginRequest: LoginRequest): LoginResponse
