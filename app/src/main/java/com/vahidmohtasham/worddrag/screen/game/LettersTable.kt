@@ -28,125 +28,149 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import com.vahidmohtasham.worddrag.R
 import com.vahidmohtasham.worddrag.utils.toDp
+import kotlin.math.max
 
 
 import kotlin.math.roundToInt
 
 import kotlin.random.Random
+
 fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): List<CharArray> {
     require(gridSize > 0) { "Grid size must be greater than 0." }
 
     val maxWordLength = words.map { it.length }.maxOrNull() ?: 0
-    val effectiveGridSize = maxOf(gridSize, maxWordLength) // استفاده از بزرگترین اندازه
-
+    val effectiveGridSize = maxOf(gridSize, maxWordLength)
     val grid = Array(effectiveGridSize) { CharArray(effectiveGridSize) { ' ' } }
 
     for (word in words.map { it.trim().replace(" ", "") }) {
         var placed = false
-        var attempts = 0 // تعداد تلاش‌ها برای قرار دادن کلمه
+        while (!placed) {
+            try {
+                val direction = when (difficulty) {
+                    Difficulty.EASY -> Random.nextInt(2) // افقی و عمودی
+                    Difficulty.MEDIUM -> Random.nextInt(4) // افقی، عمودی و دو جهت معکوس
+                    Difficulty.HARD -> Random.nextInt(8) // شامل همه جهات
+                }
 
-        while (!placed && attempts < 100) { // حداکثر 100 تلاش
-            val direction = when (difficulty) {
-                Difficulty.EASY -> Random.nextInt(1) // افقی و عمودی
-                Difficulty.MEDIUM -> Random.nextInt(4) // افقی، عمودی و دو جهت معکوس
-                Difficulty.HARD -> Random.nextInt(8) // افقی، عمودی و چهار جهت مورب
+                when (direction) {
+                    0 -> { // چپ به راست
+                        val row = Random.nextInt(effectiveGridSize)
+                        val colBound = effectiveGridSize - word.length + 1
+                        if (colBound > 0) { // بررسی مثبت بودن colBound
+                            val col = Random.nextInt(colBound)
+                            if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
+                                word.forEachIndexed { index, c ->
+                                    grid[row][col + index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    1 -> { // بالا به پایین
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val col = Random.nextInt(effectiveGridSize)
+                        if (rowBound > 0) { // بررسی مثبت بودن rowBound
+                            val row = Random.nextInt(rowBound)
+                            if ((row until row + word.length).all { grid[it][col] == ' ' }) {
+                                word.forEachIndexed { index, c ->
+                                    grid[row + index][col] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    2 -> { // راست به چپ
+                        val row = Random.nextInt(effectiveGridSize)
+                        val colBound = effectiveGridSize - word.length + 1
+                        if (colBound > 0) {
+                            val col = Random.nextInt(colBound)
+                            if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
+                                word.reversed().forEachIndexed { index, c ->
+                                    grid[row][col + index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    3 -> { // پایین به بالا
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val col = Random.nextInt(effectiveGridSize)
+                        if (rowBound > 0) {
+                            val row = Random.nextInt(rowBound)
+                            if ((row until row + word.length).all { grid[it][col] == ' ' }) {
+                                word.reversed().forEachIndexed { index, c ->
+                                    grid[row + index][col] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    4 -> { // مورب چپ-بالا به راست-پایین
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val colBound = effectiveGridSize - word.length + 1
+                        if (rowBound > 0 && colBound > 0) {
+                            val row = Random.nextInt(rowBound)
+                            val col = Random.nextInt(colBound)
+                            if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
+                                word.forEachIndexed { index, c ->
+                                    grid[row + index][col + index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    5 -> { // مورب راست-پایین به چپ-بالا
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val colBound = effectiveGridSize - word.length + 1
+                        if (rowBound > 0 && colBound > 0) {
+                            val row = Random.nextInt(rowBound)
+                            val col = Random.nextInt(colBound)
+                            if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
+                                word.reversed().forEachIndexed { index, c ->
+                                    grid[row + index][col + index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    6 -> { // مورب راست-بالا به چپ-پایین
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val col = Random.nextInt(effectiveGridSize)
+                        if (rowBound > 0 && col >= word.length) {
+                            val row = Random.nextInt(rowBound)
+                            if ((0 until word.length).all { grid[row + it][col - it] == ' ' }) {
+                                word.forEachIndexed { index, c ->
+                                    grid[row + index][col - index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+
+                    7 -> { // مورب چپ-پایین به راست-بالا
+                        val rowBound = effectiveGridSize - word.length + 1
+                        val col = Random.nextInt(effectiveGridSize)
+                        if (rowBound > 0 && col < effectiveGridSize - word.length) {
+                            val row = Random.nextInt(rowBound)
+                            if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
+                                word.reversed().forEachIndexed { index, c ->
+                                    grid[row + index][col + index] = c.uppercaseChar()
+                                }
+                                placed = true
+                            }
+                        }
+                    }
+                }
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                // اگر خطا رخ داد، مجدداً تلاش شود
+                continue
             }
-
-            when (direction) {
-                0 -> { // چپ به راست
-                    val row = Random.nextInt(effectiveGridSize)
-                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
-                    if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
-                        word.forEachIndexed { index, c ->
-                            grid[row][col + index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                1 -> { // بالا به پایین
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize)
-                    if ((row until row + word.length).all { grid[it][col] == ' ' }) {
-                        word.forEachIndexed { index, c ->
-                            grid[row + index][col] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                2 -> { // راست به چپ
-                    val row = Random.nextInt(effectiveGridSize)
-                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
-                    if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
-                        word.reversed().forEachIndexed { index, c ->
-                            grid[row][col + index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                3 -> { // پایین به بالا
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize)
-                    if ((row until row + word.length).all { grid[it][col] == ' ' }) {
-                        word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                // جهت‌های مورب برای سطح سخت
-                4 -> { // مورب چپ-بالا به راست-پایین
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
-                    if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
-                        word.forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                5 -> { // مورب راست-پایین به چپ-بالا
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
-                    if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
-                        word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                6 -> { // مورب راست-بالا به چپ-پایین
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize)
-                    if (col >= word.length && (0 until word.length).all { grid[row + it][col - it] == ' ' }) {
-                        word.forEachIndexed { index, c ->
-                            grid[row + index][col - index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-
-                7 -> { // مورب چپ-پایین به راست-بالا
-                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
-                    val col = Random.nextInt(effectiveGridSize)
-                    if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
-                        word.reversed().forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c.uppercaseChar()
-                        }
-                        placed = true
-                    }
-                }
-            }
-            attempts++ // افزایش تعداد تلاش‌ها
-        }
-
-        if (!placed) {
-            println("Unable to place the word: $word after $attempts attempts.")
         }
     }
 
