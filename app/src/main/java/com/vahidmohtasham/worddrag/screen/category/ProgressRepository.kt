@@ -1,18 +1,20 @@
 package com.vahidmohtasham.worddrag.screen.category
 
+import android.content.Context
 import com.vahidmohtasham.worddrag.api.responses.CompleteStageRequest
 import com.vahidmohtasham.worddrag.api.responses.MarkWordLearnedRequest
 import com.vahidmohtasham.worddrag.api.ProgressApi
 import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
 import com.vahidmohtasham.worddrag.api.responses.UserProgressResponse
+import com.vahidmohtasham.worddrag.viewmodels.repositorys.MasterRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ProgressRepository(private val apiService: ProgressApi) {
+class ProgressRepository(val context: Context) : MasterRepository(context) {
 
     fun startNewStage(request: StartNewStageRequest, onResult: (StageResponse?) -> Unit) {
-        apiService.startNewStage(request).enqueue(object : Callback<StageResponse> {
+        getProgressApi(context).startNewStage(request).enqueue(object : Callback<StageResponse> {
             override fun onResponse(call: Call<StageResponse>, response: Response<StageResponse>) {
                 onResult(response.body())
             }
@@ -24,7 +26,7 @@ class ProgressRepository(private val apiService: ProgressApi) {
     }
 
     fun markWordLearned(request: MarkWordLearnedRequest, onResult: (StageResponse?) -> Unit) {
-        apiService.markWordLearned(request).enqueue(object : Callback<StageResponse> {
+        getProgressApi(context).markWordLearned(request).enqueue(object : Callback<StageResponse> {
             override fun onResponse(call: Call<StageResponse>, response: Response<StageResponse>) {
                 onResult(response.body())
             }
@@ -36,7 +38,7 @@ class ProgressRepository(private val apiService: ProgressApi) {
     }
 
     fun completeStage(request: CompleteStageRequest, onResult: (StageResponse?) -> Unit) {
-        apiService.completeStage(request).enqueue(object : Callback<StageResponse> {
+        getProgressApi(context).completeStage(request).enqueue(object : Callback<StageResponse> {
             override fun onResponse(call: Call<StageResponse>, response: Response<StageResponse>) {
                 onResult(response.body())
             }
@@ -47,8 +49,8 @@ class ProgressRepository(private val apiService: ProgressApi) {
         })
     }
 
-    fun getUserStages(userId: String, categoryId: String, page: Int = 1, limit: Int = 10, onResult: (UserStagesResponse?) -> Unit) {
-        apiService.getUserStages(userId, categoryId, page, limit).enqueue(object : Callback<UserStagesResponse> {
+    fun getUserStages( categoryId: String, page: Int = 1, limit: Int = 10, onResult: (UserStagesResponse?) -> Unit) {
+        getProgressApi(context).getUserStages( categoryId, page, limit).enqueue(object : Callback<UserStagesResponse> {
             override fun onResponse(call: Call<UserStagesResponse>, response: Response<UserStagesResponse>) {
                 onResult(response.body())
             }
@@ -60,8 +62,8 @@ class ProgressRepository(private val apiService: ProgressApi) {
     }
 
     // اضافه کردن متد جدید برای دریافت پیشرفت کاربر
-    fun getUserProgress(userId: String, onResult: (UserProgressResponse?) -> Unit) {
-        apiService.getUserProgress(userId).enqueue(object : Callback<UserProgressResponse> {
+    fun getUserProgress( onResult: (UserProgressResponse?) -> Unit) {
+        getProgressApi(context).getUserProgress().enqueue(object : Callback<UserProgressResponse> {
             override fun onResponse(call: Call<UserProgressResponse>, response: Response<UserProgressResponse>) {
                 onResult(response.body())
             }

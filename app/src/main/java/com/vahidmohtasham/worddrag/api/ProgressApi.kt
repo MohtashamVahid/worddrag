@@ -25,7 +25,6 @@ interface ProgressApi : ApiService {
 
     @GET("user-stages")
     fun getUserStages(
-        @Query("userId") userId: String,
         @Query("categoryId") categoryId: String,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 10
@@ -34,6 +33,5 @@ interface ProgressApi : ApiService {
     // اضافه کردن متد جدید برای دریافت پیشرفت کاربر
     @GET("user-progress")
     fun getUserProgress(
-        @Query("userId") userId: String,
     ): Call<UserProgressResponse>
 }

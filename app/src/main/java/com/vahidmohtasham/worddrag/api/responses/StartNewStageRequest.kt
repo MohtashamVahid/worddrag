@@ -1,8 +1,8 @@
 package com.vahidmohtasham.worddrag.api.responses
 
-data class StartNewStageRequest(val userId: String, val categoryId: String, val wordsPerStage: Int = 5)
-data class MarkWordLearnedRequest(val userId: String, val stageId: String, val wordId: String)
-data class CompleteStageRequest(val userId: String, val stageId: String)
+data class StartNewStageRequest(val categoryId: String, val wordsPerStage: Int = 5)
+data class MarkWordLearnedRequest( val stageId: String, val wordId: String)
+data class CompleteStageRequest(  val stageId: String)
 data class UserProgressResponse(
     val currentLevel: String,       // سطح فعلی کاربر
     val totalLearnedWords: Int,     // تعداد لغات یادگرفته شده

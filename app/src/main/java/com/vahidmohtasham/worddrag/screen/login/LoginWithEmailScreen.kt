@@ -57,12 +57,13 @@ import androidx.navigation.NavController
 import com.vahidmohtasham.worddrag.R
 import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import com.vahidmohtasham.worddrag.screen.MainActivity
+import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
 import com.vahidmohtasham.worddrag.utils.NetworkUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginWithEmailScreen(navController: NavController, userViewModel: UserViewModel) {
+fun LoginWithEmailScreen(navController: NavController, userViewModel: UserViewModel, progressViewModel: ProgressViewModel) {
     val context = LocalContext.current as MainActivity
 
     var email by remember { mutableStateOf("") }
@@ -90,6 +91,8 @@ fun LoginWithEmailScreen(navController: NavController, userViewModel: UserViewMo
             }
             Toast.makeText(context, "خوش آمدید", Toast.LENGTH_SHORT).show()
         }
+        userViewModel.updateApiServices(context)
+        progressViewModel.updateApiServices(context)
     }
 
 

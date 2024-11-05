@@ -67,12 +67,6 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 
 
-    fun login(email: String, password: String) {
-        viewModelScope.launch {
-            val result = userRepository.login(email, password)
-            _loginResponse.value = result
-        }
-    }
 
     fun register(
         firstName: String,
@@ -94,9 +88,6 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
-    fun getUserId(): String? {
-        return userRepository.getUserId()
-    }
 
     fun isTokenExpired(context: Context): Boolean {
         return userRepository.isTokenExpired(context)
@@ -155,8 +146,8 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
                 val response = userRepository.loginWithEmail(identifier, password)
                 userRepository.saveJwtToken(response.token)
                 response.user?.let {
-                    userRepository.saveEmailVerified(it.emailVerified)
-                }
+                     userRepository.saveEmailVerified(it.emailVerified)
+                 }
                 _loginResponse.postValue(response.user)
 
             } catch (e: HttpException) {

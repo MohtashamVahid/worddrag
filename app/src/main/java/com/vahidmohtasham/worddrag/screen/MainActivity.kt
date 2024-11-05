@@ -29,7 +29,6 @@ import com.adivery.sdk.Adivery
 import com.adivery.sdk.AdiveryListener
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.screen.user.UserViewModelFactory
-import com.vahidmohtasham.worddrag.api.RetrofitInstance
 import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
 import com.vahidmohtasham.worddrag.viewmodels.repositorys.UserRepository
 import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
@@ -66,7 +65,6 @@ fun MyApp() {
     val userViewModel =
         ViewModelProvider(context as MainActivity, UserViewModelFactory(UserRepository(context)))[UserViewModel::class.java]
 
-    val progressApi = userViewModel.getProgressApi(context)
 
     getApplication()?.let {
         initAdivery(it, userViewModel)
@@ -75,9 +73,9 @@ fun MyApp() {
     val loginResponse by userViewModel.loginResponse.observeAsState()
 
 
-    val progressViewModel: ProgressViewModel = viewModel(factory = ProgressViewModelFactory(progressApi))
+    val progressViewModel: ProgressViewModel = viewModel(factory = ProgressViewModelFactory(context))
     val learnedWordsViewModel: LearnedWordsViewModel =
-        ViewModelProvider(context, LearnedWordsViewModelFactory(progressApi)).get(LearnedWordsViewModel::class.java)
+        ViewModelProvider(context, LearnedWordsViewModelFactory(context)).get(LearnedWordsViewModel::class.java)
 
     val userProgressResponse by progressViewModel.userProgressResponse.observeAsState()
     val startStageResponse by progressViewModel.startStageResponse.observeAsState()
@@ -87,17 +85,16 @@ fun MyApp() {
     LaunchedEffect(loginResponse) {
         loginResponse?.let {
             userViewModel.updateApiServices(context)
+            progressViewModel.getUserProgress()
+
         }
     }
 
     LaunchedEffect(Unit) {
         userViewModel.loadConfig()
         userViewModel.fetchCategories()
+        progressViewModel.getUserProgress()
 
-        val userId = userViewModel.getUserId()
-        userId?.let {
-            progressViewModel.getUserProgress(userId)
-        }
     }
 
 
@@ -158,15 +155,12 @@ fun MyApp() {
             val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Unknown"
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
 
-            val userId = userViewModel.getUserId()
-            if (!userId.isNullOrEmpty()) {
-                val req = StartNewStageRequest(
-                    userId = userId,
-                    categoryId = categoryId,
-                    wordsPerStage = 4
-                )
-                progressViewModel.startNewStage(req)
-            }
+            val req = StartNewStageRequest(
+                categoryId = categoryId,
+                wordsPerStage = 4
+            )
+            progressViewModel.startNewStage(req)
+
 
             CategoryDifficultyScreen(
                 navController,
@@ -188,7 +182,7 @@ fun MyApp() {
 
 
         composable("login_with_email_screen") {
-            LoginWithEmailScreen(navController, userViewModel)
+            LoginWithEmailScreen(navController, userViewModel, progressViewModel)
         }
 
         composable("reset_password_screen") {
@@ -209,17 +203,14 @@ fun MyApp() {
 
         composable("learn_words_screen/{stageId}") { backStackEntry ->
             val stageId = remember { backStackEntry.arguments?.getString("stageId") }
-
-            val userId = userViewModel.getUserId()
-            if (!userId.isNullOrEmpty()) {
-                stageId?.let {
-                    LearnWordsScreen(navController, learnedWordsViewModel, userId, stageId, progressViewModel = progressViewModel)
-                }
+            stageId?.let {
+                LearnWordsScreen(navController, learnedWordsViewModel, it, progressViewModel = progressViewModel)
             }
+
         }
     }
-
 }
+
 
 
 @Composable

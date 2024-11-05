@@ -12,6 +12,11 @@ import androidx.compose.ui.platform.LocalDensity
 fun Float.toDp(): Dp {
     return with(LocalDensity.current) { this@toDp.toDp() }
 }
+@Composable
+fun Dp.toPx(): Float {
+    return with(LocalDensity.current) { this@toPx.toPx() }
+}
+
 
 object AppUtils {
 

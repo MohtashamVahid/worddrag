@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
 import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 
 @Composable

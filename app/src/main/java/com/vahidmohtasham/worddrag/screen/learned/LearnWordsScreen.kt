@@ -40,7 +40,6 @@ import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
 fun LearnWordsScreen(
     navController: NavHostController,
     learnedWordsViewModel: LearnedWordsViewModel,
-    userId: String,
     stageId: String,
     progressViewModel: ProgressViewModel
 ) {
@@ -106,14 +105,13 @@ fun LearnWordsScreen(
 
                 Button(
                     onClick = {
-                        learnedWordsViewModel.submitLearnedWords(userId, stageId)
+                        learnedWordsViewModel.submitLearnedWords(stageId)
                         startStageResponse?.stage?.let { stage ->
                             if (selectedWords.size == stage.words.size) {
-                                val completeStageRequest = CompleteStageRequest(userId, stageId)
+                                val completeStageRequest = CompleteStageRequest( stageId)
                                 learnedWordsViewModel.completeStage(completeStageRequest) {
-                                    userId.let {
-                                        progressViewModel.getUserProgress(userId)
-                                    }
+                                        progressViewModel.getUserProgress()
+
                                 }
                             }
                         }

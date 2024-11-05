@@ -1,5 +1,6 @@
 package com.vahidmohtasham.worddrag.screen.learned
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.vahidmohtasham.worddrag.api.responses.CompleteStageRequest
 import com.vahidmohtasham.worddrag.api.responses.MarkWordLearnedRequest
@@ -12,8 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 
-class LearnedWordsViewModel(apiService: ProgressApi) : ViewModel() {
-    private val repository = ProgressRepository(apiService)
+class LearnedWordsViewModel(context: Context) : ViewModel() {
+    private val repository = ProgressRepository(context)
     private var userId: String? = null
 
     private val _selectedWords = MutableStateFlow<List<WordData>>(emptyList())
@@ -27,9 +28,9 @@ class LearnedWordsViewModel(apiService: ProgressApi) : ViewModel() {
         }
     }
 
-    fun submitLearnedWords(userId: String, stageId: String) {
+    fun submitLearnedWords(stageId: String) {
         selectedWords.value.forEach { word ->
-            val request = MarkWordLearnedRequest(userId, stageId, word.wordId._id)
+            val request = MarkWordLearnedRequest(stageId, word.wordId._id)
             markWordLearned(request)
         }
     }

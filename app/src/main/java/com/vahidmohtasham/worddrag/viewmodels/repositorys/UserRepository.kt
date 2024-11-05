@@ -27,11 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.UUID
 
-class UserRepository(private val context: Context) {
-
-    private val sharedPreferencesManager: SharedPreferencesManager = SharedPreferencesManager.init(context)
-
-    private var userId: String? = null
+class UserRepository(private val context: Context): MasterRepository(context) {
 
     private var uniqueCode: String? = null
 
@@ -43,8 +39,6 @@ class UserRepository(private val context: Context) {
         }
     }
 
-    private var _progressApi: ProgressApi? = null
-    private var _apiService: ApiService? = null
 
     companion object {
         const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L // یک روز به میلی‌ثانیه
@@ -54,7 +48,6 @@ class UserRepository(private val context: Context) {
     suspend fun getCategories(): CategoriesResponse {
         return getApiService(context).getCategories()
     }
-
 
 
     suspend fun login(email: String, password: String): User? {
@@ -91,14 +84,14 @@ class UserRepository(private val context: Context) {
         }
     }
 
-    fun getUserId(): String? {
-        return if (userId != null)
-            userId
-        else {
-            userId = sharedPreferencesManager.getString(Constant.USER_ID, null)
-            userId
-        }
-    }
+//    fun getUserId(): String? {
+//        return if (userId != null)
+//            userId
+//        else {
+//            userId = sharedPreferencesManager.getString(Constant.USER_ID, null)
+//            userId
+//        }
+//    }
 
 
     fun isTokenExpired(context: Context): Boolean {
@@ -124,9 +117,6 @@ class UserRepository(private val context: Context) {
         return System.currentTimeMillis() + timeOffset
     }
 
-    fun getUniqueID(): String? {
-        return sharedPreferencesManager.getString(Constant.UNIQUE_CODE, null)
-    }
 
     suspend fun resetPassword(email: String): BaseResponse {
         val resetPasswordRequest = ForgotPasswordRequest(email)
@@ -151,9 +141,6 @@ class UserRepository(private val context: Context) {
         return getApiService(context).loginWithEmail(loginRequest)
     }
 
-    fun saveJwtToken(token: String?) {
-        sharedPreferencesManager.saveJwtToken(token ?: "")
-    }
 
     fun hasFreeTimeRemaining(adId: String): Boolean {
         var savedTime = sharedPreferencesManager.getLong(adId, 0L)
@@ -261,29 +248,6 @@ class UserRepository(private val context: Context) {
         return sharedPreferencesManager.getBoolean(Constant.EMAIL_VERIFIED, false)
     }
 
-    fun getJwtToken(): String? {
-        return sharedPreferencesManager.getJwtToken()
-    }
 
-    // متد برای دریافت ApiService
-    fun getApiService(context: Context): ApiService {
-        if (_apiService == null) {
-            updateApiServices(context)
-        }
-        return _apiService!!
-    }
-
-    fun updateApiServices(context: Context) {
-        _progressApi = RetrofitInstance.getProgressApi( context)
-        _apiService = RetrofitInstance.getApiService(context)
-    }
-
-    // متد برای دریافت ProgressApi
-    fun getProgressApi(context: Context): ProgressApi {
-        if (_progressApi == null) {
-            updateApiServices(context)
-        }
-        return _progressApi!!
-    }
 
 }

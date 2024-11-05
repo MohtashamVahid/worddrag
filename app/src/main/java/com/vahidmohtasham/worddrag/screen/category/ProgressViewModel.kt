@@ -1,5 +1,6 @@
 package com.vahidmohtasham.worddrag.screen.category
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vahidmohtasham.worddrag.api.responses.CompleteStageRequest
@@ -8,8 +9,8 @@ import com.vahidmohtasham.worddrag.api.ProgressApi
 import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
 import com.vahidmohtasham.worddrag.api.responses.UserProgressResponse
 
-class ProgressViewModel(apiService: ProgressApi) : ViewModel() {
-    private val repository = ProgressRepository(apiService)
+class ProgressViewModel(val context: Context) : ViewModel() {
+    private val repository = ProgressRepository(context)
 
     val isLoading = MutableLiveData<Boolean>()
     val error = MutableLiveData<String?>()
@@ -37,15 +38,19 @@ class ProgressViewModel(apiService: ProgressApi) : ViewModel() {
         }
     }
 
-    fun getUserStages(userId: String, categoryId: String, page: Int = 1, limit: Int = 10) {
-        repository.getUserStages(userId, categoryId, page, limit) {
+    fun getUserStages( categoryId: String, page: Int = 1, limit: Int = 10) {
+        repository.getUserStages(categoryId, page, limit) {
             userStagesResponse.value = it
         }
     }
 
-    fun getUserProgress(userId: String) {
-        repository.getUserProgress(userId) {
+    fun getUserProgress() {
+        repository.getUserProgress() {
             userProgressResponse.value = it
         }
+    }
+
+    fun updateApiServices(context: Context) {
+        repository.updateApiServices(context)
     }
 }

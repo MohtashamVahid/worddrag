@@ -1,9 +1,10 @@
 package com.vahidmohtasham.worddrag.api.entity
 
+import com.google.gson.annotations.SerializedName
 import com.vahidmohtasham.worddrag.api.responses.BaseResponse
 
 data class User(
-    val _id: String,
+    @SerializedName("_id") val id: String,
     val uniqueCode: String?,
     val email: String?,
     val firstName: String?,

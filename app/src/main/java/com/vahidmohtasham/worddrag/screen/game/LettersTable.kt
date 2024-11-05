@@ -31,25 +31,31 @@ import com.vahidmohtasham.worddrag.utils.toDp
 
 
 import kotlin.math.roundToInt
+
 import kotlin.random.Random
-
 fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): List<CharArray> {
-    val grid = Array(gridSize) { CharArray(gridSize) { ' ' } }
+    require(gridSize > 0) { "Grid size must be greater than 0." }
 
-    // درج کلمات هدف در جدول
-    for (word in words) {
+    val maxWordLength = words.map { it.length }.maxOrNull() ?: 0
+    val effectiveGridSize = maxOf(gridSize, maxWordLength) // استفاده از بزرگترین اندازه
+
+    val grid = Array(effectiveGridSize) { CharArray(effectiveGridSize) { ' ' } }
+
+    for (word in words.map { it.trim().replace(" ", "") }) {
         var placed = false
-        while (!placed) {
+        var attempts = 0 // تعداد تلاش‌ها برای قرار دادن کلمه
+
+        while (!placed && attempts < 100) { // حداکثر 100 تلاش
             val direction = when (difficulty) {
-                Difficulty.EASY -> Random.nextInt(1) // 0 برای افقی، 1 برای عمودی
-                Difficulty.MEDIUM -> Random.nextInt(4) // اضافه شدن جهت‌های معکوس
-                Difficulty.HARD -> Random.nextInt(8) // شامل جهت‌های مورب
+                Difficulty.EASY -> Random.nextInt(1) // افقی و عمودی
+                Difficulty.MEDIUM -> Random.nextInt(4) // افقی، عمودی و دو جهت معکوس
+                Difficulty.HARD -> Random.nextInt(8) // افقی، عمودی و چهار جهت مورب
             }
 
             when (direction) {
                 0 -> { // چپ به راست
-                    val row = Random.nextInt(gridSize)
-                    val col = Random.nextInt(gridSize - word.length)
+                    val row = Random.nextInt(effectiveGridSize)
+                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
                     if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
                         word.forEachIndexed { index, c ->
                             grid[row][col + index] = c.uppercaseChar()
@@ -59,8 +65,8 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                 }
 
                 1 -> { // بالا به پایین
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize)
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize)
                     if ((row until row + word.length).all { grid[it][col] == ' ' }) {
                         word.forEachIndexed { index, c ->
                             grid[row + index][col] = c.uppercaseChar()
@@ -70,8 +76,8 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                 }
 
                 2 -> { // راست به چپ
-                    val row = Random.nextInt(gridSize)
-                    val col = Random.nextInt(gridSize - word.length)
+                    val row = Random.nextInt(effectiveGridSize)
+                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
                     if (grid[row].sliceArray(col until col + word.length).all { it == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
                             grid[row][col + index] = c.uppercaseChar()
@@ -81,8 +87,8 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                 }
 
                 3 -> { // پایین به بالا
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize)
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize)
                     if ((row until row + word.length).all { grid[it][col] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
                             grid[row + index][col] = c.uppercaseChar()
@@ -90,10 +96,11 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                         placed = true
                     }
                 }
-                // سایر جهت‌های مورب برای سطح سخت
+
+                // جهت‌های مورب برای سطح سخت
                 4 -> { // مورب چپ-بالا به راست-پایین
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize - word.length)
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.forEachIndexed { index, c ->
                             grid[row + index][col + index] = c.uppercaseChar()
@@ -103,8 +110,8 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                 }
 
                 5 -> { // مورب راست-پایین به چپ-بالا
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize - word.length)
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize - word.length + 1)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
                             grid[row + index][col + index] = c.uppercaseChar()
@@ -114,19 +121,19 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                 }
 
                 6 -> { // مورب راست-بالا به چپ-پایین
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize - word.length)
-                    if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize)
+                    if (col >= word.length && (0 until word.length).all { grid[row + it][col - it] == ' ' }) {
                         word.forEachIndexed { index, c ->
-                            grid[row + index][col + index] = c.uppercaseChar()
+                            grid[row + index][col - index] = c.uppercaseChar()
                         }
                         placed = true
                     }
                 }
 
                 7 -> { // مورب چپ-پایین به راست-بالا
-                    val row = Random.nextInt(gridSize - word.length)
-                    val col = Random.nextInt(gridSize - word.length)
+                    val row = Random.nextInt(effectiveGridSize - word.length + 1)
+                    val col = Random.nextInt(effectiveGridSize)
                     if ((0 until word.length).all { grid[row + it][col + it] == ' ' }) {
                         word.reversed().forEachIndexed { index, c ->
                             grid[row + index][col + index] = c.uppercaseChar()
@@ -135,16 +142,19 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
                     }
                 }
             }
+            attempts++ // افزایش تعداد تلاش‌ها
+        }
+
+        if (!placed) {
+            println("Unable to place the word: $word after $attempts attempts.")
         }
     }
 
     // پر کردن خانه‌های خالی با حروف تصادفی
-    for (i in 0 until gridSize) {
-        for (j in 0 until gridSize) {
+    for (i in 0 until effectiveGridSize) {
+        for (j in 0 until effectiveGridSize) {
             if (grid[i][j] == ' ') {
                 grid[i][j] = ('A'..'Z').random()
-            } else {
-                grid[i][j].uppercaseChar()
             }
         }
     }
@@ -157,15 +167,12 @@ fun generateGrid(gridSize: Int, words: List<String>, difficulty: Difficulty): Li
 fun LettersTable(
     grid: List<CharArray>,
     targetWords: List<String>,
-    cellSize: Dp = 40.dp,
     spacing: Dp = 4.dp, // فاصله بین خانه‌ها
     viewModel: LetterGameViewModel // پاس دادن ViewModel به کامپوزبل
 ) {
     val columns = grid.size
     val rows = grid.size
-    val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
-    val spacingPx = with(LocalDensity.current) { spacing.toPx() }
-    val context = LocalContext.current
+    val density = LocalDensity.current
 
     // States to track dragging
     var draggedLetters by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
@@ -192,7 +199,6 @@ fun LettersTable(
             viewModel.addFoundWord(lowercaseCurrentWord) // استفاده از ViewModel برای افزودن کلمه پیدا شده
             Log.d("LettersTable", "Word found: $lowercaseCurrentWord") // لاگ وقتی کلمه پیدا شده است
             foundWords = foundWords + draggedLetters
-
         } else {
             Log.d("LettersTable", "Word not found: $lowercaseCurrentWord") // لاگ وقتی کلمه پیدا نشده است
         }
@@ -201,13 +207,16 @@ fun LettersTable(
         currentWord = ""
     }
 
-
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Calculate available space
+        val boxWidth = constraints.maxWidth.toFloat()
+        val boxHeight = constraints.maxHeight.toFloat()
 
-        val boxWidth = constraints.maxWidth
-        val boxHeight = constraints.maxHeight
+        // Calculate cell size dynamically
+        val cellSizePx = (minOf(boxWidth, boxHeight) - ((columns - 1) * with(density) { spacing.toPx() })) / columns
+        val spacingPx = with(density) { spacing.toPx() }
 
         val gridWidthPx = (columns * cellSizePx) + ((columns - 1) * spacingPx)
         val gridHeightPx = (rows * cellSizePx) + ((rows - 1) * spacingPx)
@@ -217,8 +226,8 @@ fun LettersTable(
 
         // Convert absolute drag positions to grid coordinates
         fun positionToGridCoordinates(x: Float, y: Float): Pair<Int, Int> {
-            val col = ((x - offsetX) / (cellSizePx + spacingPx)).roundToInt()
-            val row = ((y - offsetY) / (cellSizePx + spacingPx)).roundToInt()
+            val col = ((x - offsetX) / (cellSizePx + spacingPx)).toInt()
+            val row = ((y - offsetY) / (cellSizePx + spacingPx)).toInt()
             return Pair(row, col)
         }
 
@@ -278,7 +287,6 @@ fun LettersTable(
                                 color = android.graphics.Color.WHITE
                                 textAlign = android.graphics.Paint.Align.CENTER
                                 textSize = (cellSizePx * 0.6).toFloat() // تنظیم اندازه متن
-                                typeface = ResourcesCompat.getFont(context, R.font.kavoon_regular)
                             }
 
                             val textBounds = android.graphics.Rect()
@@ -296,3 +304,4 @@ fun LettersTable(
         }
     }
 }
+
