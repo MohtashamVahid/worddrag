@@ -149,10 +149,10 @@ fun LetterGameScreen(
                                     }
                                 }
 
-                                BannerAdCardView(
-                                    "7fa22e57-68c4-4157-85a0-485f7fa08f25",
-                                    Modifier.padding(top = 16.dp, end = 8.dp, start = 8.dp, bottom = 16.dp)
-                                )
+//                                BannerAdCardView(
+//                                    "7fa22e57-68c4-4157-85a0-485f7fa08f25",
+//                                    Modifier.padding(top = 16.dp, end = 8.dp, start = 8.dp, bottom = 16.dp)
+//                                )
                                 LettersTable(grid, state.words, viewModel = viewModel) // ارسال ViewModel به LettersTable
 
 
@@ -228,8 +228,8 @@ fun WordHint(wordDataList: List<WordData>) {
         // نمایش معنی کلمه
         Text(
             text = wordDataList[currentIndex].wordId.meaning,
-            modifier = Modifier.padding(top = 8.dp),
-            fontSize = 16.sp,
+            modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+            fontSize = 14.sp,
             color = Color.Gray, style = yekanBakhTextStyle
         )
 
@@ -237,7 +237,7 @@ fun WordHint(wordDataList: List<WordData>) {
         wordDataList[currentIndex].wordId.example?.let { example ->
             Text(
                 text = "Example: $example",
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
                 fontSize = 14.sp,
                 color = Color.DarkGray,
             )

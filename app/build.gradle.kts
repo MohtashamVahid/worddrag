@@ -12,8 +12,8 @@ android {
         applicationId = "com.vahidmohtasham.worddrag"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -29,6 +29,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -59,6 +60,40 @@ android {
             languageVersion.set(JavaLanguageVersion.of(8)) // یا 11 اگر بخواهید از Java 11 استفاده کنید
         }
     }
+
+    applicationVariants.all {
+
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
+            val variantName = name
+            val versionName = versionName
+            val versionCode = versionCode
+            val buildType = buildType.name
+
+            outputImpl.outputFileName = "${variantName}-bazar-v${versionName}-${versionCode}.apk"
+        }
+
+    }
+
+
+
+    applicationVariants.all {
+
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
+            val variantName = name
+            val versionName = versionName
+            val versionCode = versionCode
+            val buildType = buildType.name
+
+            outputImpl.outputFileName = "${variantName}-bazar-v${versionName}-${versionCode}.apk"
+        }
+
+    }
+
+
 
 }
 
