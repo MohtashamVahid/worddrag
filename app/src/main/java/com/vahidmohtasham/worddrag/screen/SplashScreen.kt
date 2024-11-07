@@ -38,6 +38,8 @@ fun SplashScreen(onTimeout: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+
+            .padding(bottom = 40.dp)
             .background(Color.Black), // پس‌زمینه مشکی برای حالت فول اسکرین
         contentAlignment = Alignment.Center
     ) {
@@ -56,14 +58,14 @@ fun SplashScreen(onTimeout: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Version: ${BuildConfig.VERSION_NAME}",
-                fontSize = 12.sp,
-                color = Color.White
-            )
-            Text(
                 text = "Vahid Mohtasham",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "Version: ${BuildConfig.VERSION_NAME}",
+                fontSize = 12.sp,
                 color = Color.White
             )
         }
@@ -72,7 +74,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 0.dp)
+                .padding(bottom = 8.dp )
                 .height(4.dp)
                 .background(Color.Gray) // رنگ پس‌زمینه نوار بارگذاری
         ) {

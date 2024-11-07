@@ -1,4 +1,4 @@
-package com.vahidmohtasham.worddrag.screen.login
+package com.vahidmohtasham.worddrag
 
 
 import android.content.Context
@@ -19,14 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
-
 
 @Composable
 fun AppItem(app: App, context: Context) {
@@ -34,7 +31,7 @@ fun AppItem(app: App, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable {
-//                 MyKetIntent.openDeveloperPage(context,app.packageName)
+                BazaarIntentManager(context).openAppDetails(app.packageName)
             }
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
@@ -57,7 +54,6 @@ fun AppItem(app: App, context: Context) {
             text = app.name,
             style = yekanBakhTextStyle,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
     }
@@ -74,16 +70,22 @@ const val currentPackage = BuildConfig.APPLICATION_ID
 
 val appList = listOf(
     App(
-        "هوش مصنوعی سامانتا",
-        "https://s.cafebazaar.ir/images/icons/com.vahidmohtasham.samantaai-25b4b7d8-8efb-47e1-b891-159b88f92f7e_512x512.png?x-img=v1/format,type_webp,lossless_false/resize,h_256,w_256,lossless_false/optimize",
-        "https://myket.ir/app/com.vahidmohtasham.samantaai",
-        "com.vahidmohtasham.samantaai"
-    ),
-    App(
         "لوگوساز حرفه ای و با کیفیت",
         "https://s.cafebazaar.ir/images/icons/com.vahidmohtasham.samantaai.logomaker-06e6e135-dcd3-47c8-b003-6948b1b07451_512x512.png?x-img=v1/format,type_webp,lossless_false/resize,h_256,w_256,lossless_false/optimize",
-        "https://myket.ir/app/com.vahidmohtasham.samantaai.logomaker",
+        "https://cafebazaar.ir/app/com.vahidmohtasham.samantaai.logomaker",
         "com.vahidmohtasham.samantaai.logomaker"
+    ),
+    App(
+        "گرفتن فال با سامانتا",
+        "https://s.cafebazaar.ir/images/icons/com.vahidmohtasham.samantaai.falegir-9cb181ec-6f69-4423-96a4-5f6ace89daa8_512x512.png?x-img=v1/format,type_webp,lossless_false/resize,h_256,w_256,lossless_false/optimize",
+        "https://cafebazaar.ir/app/com.vahidmohtasham.samantaai.falegir",
+        "com.vahidmohtasham.samantaai.falegir"
+    ),
+    App(
+        "هوش مصنوعی سامانتا",
+        "https://s.cafebazaar.ir/images/icons/com.vahidmohtasham.samantaai-24a50fb8-1a77-4f9a-84d3-8b32694e13f9_512x512.png?x-img=v1/format,type_webp,lossless_false/resize,h_256,w_256,lossless_false/optimize",
+        "https://cafebazaar.ir/app/com.vahidmohtasham.samantaai",
+        "com.vahidmohtasham.samantaai"
     ),
     App(
         "تحلیل سایت با هوش مصنوعی",
@@ -99,8 +101,8 @@ val appList = listOf(
     ),
     App(
         "شبیه ساز تاچ و کلیکر",
-        "https://myket.ir/app-icon/00d96a2c-a3c1-4228-a691-a102c262d835.png",
-        "https://myket.ir/app/com.touch.gram",
+        "https://s.cafebazaar.ir/images/icons/com.touch.gram-1d295dca-36b4-49f8-b79c-6f7fc56835a7_512x512.png?x-img=v1/format,type_webp,lossless_false/resize,h_256,w_256,lossless_false/optimize",
+        "https://cafebazaar.ir/app/com.touch.gram",
         "com.touch.gram"
     ),
 )

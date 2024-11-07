@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -56,11 +57,12 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.AppItem
 import com.vahidmohtasham.worddrag.R
-
-import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
+import com.vahidmohtasham.worddrag.filteredAppList
 import com.vahidmohtasham.worddrag.screen.MainActivity
 import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
+import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import java.util.regex.Pattern
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -324,7 +326,6 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                     ) {
                         Text("Register")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
                 item {
 
@@ -360,12 +361,11 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                         textDecoration = TextDecoration.Underline, // اضافه کردن زیرخط
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(4.dp)
                             .clickable {
                                 navController.navigate("privacy_policy_screen") // ناوبری به صفحه سیاست حریم خصوصی
                             }
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 item {
@@ -376,9 +376,8 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(4.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
 
@@ -387,7 +386,7 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
+                            .heightIn(max = 500.dp)
                     ) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3), // تعداد ستون‌ها
@@ -400,10 +399,6 @@ fun SignUpScreen(navController: NavHostController, userViewModel: UserViewModel)
                     }
                 }
 
-
-                item {
-                    Spacer(modifier = Modifier.height(100.dp))
-                }
 
             }
 
