@@ -19,10 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.R
+import com.vahidmohtasham.worddrag.ui.theme.yekanBakhTextStyle
 import kotlinx.coroutines.delay
 
 @Composable
@@ -58,8 +60,14 @@ fun SplashScreen(onTimeout: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
+                text = "This application uses OpenAI models for content processing and generation.",
+                fontSize = 14.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Text(
                 text = "Vahid Mohtasham",
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )

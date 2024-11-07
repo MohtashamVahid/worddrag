@@ -27,8 +27,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.adivery.sdk.Adivery
 import com.adivery.sdk.AdiveryListener
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.ktx.Firebase
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.screen.user.UserViewModelFactory
 import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
@@ -201,6 +199,10 @@ fun MyApp() {
 
         composable("privacy_policy_screen") {
             PrivacyPolicyScreen(navController)
+        }
+
+        composable("resources_page") {
+            ResourcesPage(navController)
         }
 
         composable("learn_words_screen/{stageId}") { backStackEntry ->

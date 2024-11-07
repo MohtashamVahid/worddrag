@@ -32,11 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.vahidmohtasham.worddrag.viewmodels.UserViewModel
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.BackPressHandler
 import com.vahidmohtasham.worddrag.BannerAdCardView
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.api.entity.Category
@@ -54,6 +57,12 @@ fun UserProfileScreen(
 ) {
     val categories by userViewModel.categories.observeAsState() // دریافت دسته‌ها از ViewModel
     val context = LocalContext.current
+
+    val showExitDialog = remember { mutableStateOf(false) } // برای نمایش دیالوگ تایید خروج
+
+    // استفاده از BackPressHandler برای مدیریت دکمه برگشت
+    BackPressHandler(navController = navHostController, showExitDialog = showExitDialog)
+
 
     Scaffold { paddingValues ->
         LazyColumn(
@@ -102,13 +111,11 @@ fun UserProfileScreen(
             }
 
             item {
-                Spacer(modifier = Modifier.height(8.dp))
 
                 BannerAdCardView(
-                    BuildConfig.BANNER_AD_ID_PROFILE, Modifier.padding(top = 16.dp, end = 8.dp, start = 8.dp)
+                    BuildConfig.BANNER_AD_ID_PROFILE, Modifier.padding(top = 8.dp, end = 8.dp, start = 8.dp, bottom = 8.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+             }
 
             // نمایش هشدار تأیید ایمیل
             item {
@@ -116,7 +123,7 @@ fun UserProfileScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
                             .clickable(onClick = {
                                 navHostController.navigate("email_verification_screen")
                             }),
@@ -157,6 +164,23 @@ fun UserProfileScreen(
             }
 
             item {
+                Button(
+                    onClick = {navHostController.navigate("resources_page") },
+                    modifier = Modifier
+                        .padding(top = 0.dp)
+                        .height(50.dp),
+
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary, // رنگ جدید دکمه‌ها
+                        contentColor = MaterialTheme.colorScheme.onPrimary // رنگ متن
+                    ),
+                    shape = MaterialTheme.shapes.small, // استفاده از شکل کوچک‌تر برای دکمه‌ها
+                    elevation = ButtonDefaults.buttonElevation(4.dp) // سایه ملایم
+                ) {
+                    Text(
+                        text = "View Resources", fontSize = 12.sp
+                    )
+                }
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }

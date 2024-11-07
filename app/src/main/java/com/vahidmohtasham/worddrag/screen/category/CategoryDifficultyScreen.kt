@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.adivery.sdk.Adivery
 import com.vahidmohtasham.worddrag.AppItem
+import com.vahidmohtasham.worddrag.BackPressHandler
 import com.vahidmohtasham.worddrag.BannerAdCardView
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.filteredAppList
@@ -59,9 +60,12 @@ fun CategoryDifficultyScreen(
     onDifficultySelected: (Difficulty) -> Unit,
     userViewModel: UserViewModel,
 ) {
-    // ایجاد یک state برای ذخیره وضعیت انتخاب سختی
     var isDifficultySelected by remember { mutableStateOf(false) }
     val context = LocalContext.current as MainActivity
+
+    val showExitDialog = remember { mutableStateOf(false) } // برای نمایش دیالوگ تایید خروج
+
+    BackPressHandler(navController = navController, showExitDialog = showExitDialog)
 
     LaunchedEffect(Unit) {
         if (!BuildConfig.DEBUG && !userViewModel.hasFreeTimeRemaining(BuildConfig.BANNER_AD_ID_Interstitial)) {
@@ -159,7 +163,7 @@ fun CategoryDifficultyScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 500.dp) // ارتفاع ثابت
+                            .heightIn(max = 300.dp) // ارتفاع ثابت
                     ) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3), // تعداد ستون‌ها
