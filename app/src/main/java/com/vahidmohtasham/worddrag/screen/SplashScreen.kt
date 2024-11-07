@@ -59,12 +59,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "This application uses OpenAI models for content processing and generation.",
-                fontSize = 14.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
+
             Text(
                 text = "Vahid Mohtasham",
                 fontSize = 14.sp,

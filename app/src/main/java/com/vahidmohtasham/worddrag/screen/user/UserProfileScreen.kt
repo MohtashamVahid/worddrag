@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -23,7 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,8 +63,52 @@ fun UserProfileScreen(
 
     val showExitDialog = remember { mutableStateOf(false) } // برای نمایش دیالوگ تایید خروج
 
-    // استفاده از BackPressHandler برای مدیریت دکمه برگشت
-    BackPressHandler(navController = navHostController, showExitDialog = showExitDialog)
+    BackPressHandler {
+        showExitDialog.value = true
+    }
+
+    // نمایش دیالوگ تایید خروج
+    if (showExitDialog.value) {
+        Surface(
+            color = MaterialTheme.colorScheme.surface, // تنظیم رنگ پس‌زمینه از تم
+            shape = MaterialTheme.shapes.medium // تنظیم شکل سطح
+        ) {
+        AlertDialog(
+            onDismissRequest = {
+                showExitDialog.value = false
+            },
+            title = {
+                Text("آیا می‌خواهید از این صفحه خارج شوید؟", style = yekanBakhTextStyle)
+            },
+            confirmButton = {
+                TextButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    onClick = {
+                        showExitDialog.value = false
+                        navHostController.popBackStack() // برگشت به صفحه قبلی
+                    }
+                ) {
+                    Text("بله", style = yekanBakhTextStyle)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    ),
+                    onClick = {
+                        showExitDialog.value = false
+                    }
+                ) {
+                    Text("نه", style = yekanBakhTextStyle)
+                }
+            }
+        )}
+    }
 
 
     Scaffold { paddingValues ->
@@ -115,7 +162,7 @@ fun UserProfileScreen(
                 BannerAdCardView(
                     BuildConfig.BANNER_AD_ID_PROFILE, Modifier.padding(top = 8.dp, end = 8.dp, start = 8.dp, bottom = 8.dp)
                 )
-             }
+            }
 
             // نمایش هشدار تأیید ایمیل
             item {
@@ -165,7 +212,7 @@ fun UserProfileScreen(
 
             item {
                 Button(
-                    onClick = {navHostController.navigate("resources_page") },
+                    onClick = { navHostController.navigate("resources_page") },
                     modifier = Modifier
                         .padding(top = 0.dp)
                         .height(50.dp),

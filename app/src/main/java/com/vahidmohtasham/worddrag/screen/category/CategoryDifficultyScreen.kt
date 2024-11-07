@@ -64,9 +64,11 @@ fun CategoryDifficultyScreen(
     val context = LocalContext.current as MainActivity
 
     val showExitDialog = remember { mutableStateOf(false) } // برای نمایش دیالوگ تایید خروج
-
-    BackPressHandler(navController = navController, showExitDialog = showExitDialog)
-
+    BackPressHandler {
+        navController.navigate("profile") {
+            popUpTo("profile") { inclusive = true }
+        }
+      }
     LaunchedEffect(Unit) {
         if (!BuildConfig.DEBUG && !userViewModel.hasFreeTimeRemaining(BuildConfig.BANNER_AD_ID_Interstitial)) {
             if (Adivery.isLoaded(BuildConfig.BANNER_AD_ID_Interstitial)) {

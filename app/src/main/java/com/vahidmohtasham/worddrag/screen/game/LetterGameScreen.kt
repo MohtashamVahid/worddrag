@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.vahidmohtasham.worddrag.BackPressHandler
 import com.vahidmohtasham.worddrag.BannerAdCardView
 import com.vahidmohtasham.worddrag.R
 import com.vahidmohtasham.worddrag.screen.category.ProgressViewModel
@@ -64,6 +65,14 @@ fun LetterGameScreen(
     var showDialog by remember { mutableStateOf(false) }
 
     val isButtonEnabled by viewModel.isButtonEnabled.collectAsState() // وضعیت دکمه
+
+    val showExitDialog = remember { mutableStateOf(false) } // برای نمایش دیالوگ تایید خروج
+
+    BackPressHandler {
+        navController.navigate("profile") {
+            popUpTo("profile") { inclusive = true }
+        }
+    }
 
     LaunchedEffect(Unit) {
         startStageResponse?.let {
@@ -95,7 +104,7 @@ fun LetterGameScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            showDialog=true
+                            showDialog = true
                         }
                     ) {
                         Icon(Icons.Filled.Info, contentDescription = "Info")
