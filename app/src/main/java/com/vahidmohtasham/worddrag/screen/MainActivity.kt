@@ -27,6 +27,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.adivery.sdk.Adivery
 import com.adivery.sdk.AdiveryListener
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.ktx.Firebase
 import com.vahidmohtasham.worddrag.BuildConfig
 import com.vahidmohtasham.worddrag.screen.user.UserViewModelFactory
 import com.vahidmohtasham.worddrag.api.responses.StartNewStageRequest
@@ -259,11 +261,10 @@ private fun initAdivery(application: Application, userViewModel: UserViewModel) 
 
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
 
         window.statusBarColor = Color.Transparent.toArgb() // مخفی کردن نوار وضعیت
 

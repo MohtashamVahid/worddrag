@@ -21,6 +21,12 @@ coil = "2.7.0"
 coilCompose = "2.7.0"
 accompanistSystemuicontroller = "0.36.0"
 sdk = "4.8.0"
+googleGmsGoogleServices = "4.3.14"
+firebaseAnalyticsKtx = "21.2.0"
+firebaseCrashlytics = "18.3.2"
+firebaseAnalytics = "21.2.0"
+googleFirebaseCrashlytics = "2.9.2"
+firebaseMessaging = "23.1.0"
 
 
 [libraries]
@@ -49,7 +55,13 @@ logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-intercep
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 sdk = { group = "com.adivery", name = "sdk", version.ref = "sdk" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebaseAnalyticsKtx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
